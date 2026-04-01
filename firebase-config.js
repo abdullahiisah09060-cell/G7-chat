@@ -15,4 +15,10 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const provider = new GoogleAuthProvider();
-export const ADMIN_EMAIL = "liger4683@gmail.com";
+
+// All Admin Emails in one place
+export const ADMIN_EMAILS = [
+  "liger4683@gmail.com",
+  "abdullahiisah09060@gmail.com",
+  "adewumigiftosinimu24@gmail.com"
+];

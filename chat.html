@@ -1,23 +1,66 @@
 <!DOCTYPE html>
-<html>
-<head><link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G7 Hitech | Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
 <body>
     <div class="chat-wrapper">
-        <div class="sidebar">
-            <h3>G7 Hitech</h3>
-            <p id="userName">...</p>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>G7 Hitech</h3>
+                <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+            </div>
+            <p id="userName">Loading profile...</p>
             <hr>
-            <button onclick="location.href='admin.html'" id="adminBtn" style="display:none">Admin Panel</button>
-            <button onclick="import('./firebase-config.js').then(f => f.auth.signOut().then(()=>location.href='index.html'))">Logout</button>
+            <div class="sidebar-actions">
+                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none" class="action-btn admin">
+                    <i class="fas fa-user-shield"></i> Admin Panel
+                </button>
+                <button id="logoutBtn" class="action-btn logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
         </div>
+
         <div class="main-chat">
+            <div class="chat-header">
+                <button class="menu-btn" id="openSidebar"><i class="fas fa-bars"></i></button>
+                <span id="chatTitle">Main Group Chat</span>
+            </div>
+
             <div id="messages"></div>
+
             <div class="input-area">
-                <input type="text" id="msgInput" placeholder="Type a message...">
-                <button id="sendBtn" class="send-btn">Send</button>
+                <input type="text" id="msgInput" placeholder="Type a message..." autocomplete="off">
+                <button id="sendBtn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
+
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        
+        // Mobile Sidebar Logic
+        const sidebar = document.getElementById('sidebar');
+        const openBtn = document.getElementById('openSidebar');
+        const closeBtn = document.getElementById('closeSidebar');
+
+        openBtn.onclick = () => sidebar.classList.add('active');
+        closeBtn.onclick = () => sidebar.classList.remove('active');
+
+        // Logout Logic
+        document.getElementById('logoutBtn').onclick = () => {
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        };
+    </script>
     <script type="module" src="app.js"></script>
 </body>
 </html>

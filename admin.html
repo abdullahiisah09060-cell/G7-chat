@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+    <div class="setup-container" style="max-width: 600px;">
+        <h2>Admin Control</h2>
+        <div id="userList"></div>
+        <button onclick="location.href='chat.html'">Back to Chat</button>
+    </div>
+    <script type="module">
+        import { db } from './firebase-config.js';
+        import { collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        onSnapshot(collection(db, "users"), (snap) => {
+            const list = document.getElementById('userList');
+            list.innerHTML = '';
+            snap.forEach(u => {
+                const user = u.data();
+                list.innerHTML += `
+                    <div style="border-bottom:1px solid #333; padding:10px; display:flex; justify-content:space-between">
+                        <span>${user.name} (${user.dept})</span>
+                        <button onclick="toggleBan('${u.id}', ${user.isBanned})">
+                            ${user.isBanned ? 'Unban' : 'Ban'}
+                        </button>
+                    </div>`;
+            });
+        });
+
+        window.toggleBan = async (id, status) => {
+            await updateDoc(doc(db, "users", id), { isBanned: !status });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+:root {
+    --primary: #007bff;
+    --dark-bg: #121212;
+    --card-bg: #1e1e1e;
+    --text: #ffffff;
+    --border: #333;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Landing & Setup Page */
+.login-container, .setup-container {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 400px;
+}
+
+.google-btn {
+    background: white;
+    color: #444;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px auto;
+}
+
+/* Chat Layout */
+.chat-wrapper {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background: #181818;
+    border-right: 1px solid var(--border);
+    padding: 20px;
+}
+
+.main-chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.msg {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #2a2a2a;
+    max-width: 70%;
+}
+
+.msg.me {
+    background: var(--primary);
+    margin-left: auto;
+}
+
+.msg-info {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+.input-area {
+    padding: 20px;
+    background: #181818;
+    display: flex;
+    gap: 10px;
+}
+
+input, select {
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: #222;
+    color: white;
+    width: 100%;
+}
+
+button.send-btn {
+    background: var(--primary);
+    border: none;
+    padding: 0 20px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}

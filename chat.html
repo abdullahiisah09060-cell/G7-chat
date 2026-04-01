@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+    <div class="chat-wrapper">
+        <div class="sidebar">
+            <h3>G7 Hitech</h3>
+            <p id="userName">...</p>
+            <hr>
+            <button onclick="location.href='admin.html'" id="adminBtn" style="display:none">Admin Panel</button>
+            <button onclick="import('./firebase-config.js').then(f => f.auth.signOut().then(()=>location.href='index.html'))">Logout</button>
+        </div>
+        <div class="main-chat">
+            <div id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="msgInput" placeholder="Type a message...">
+                <button id="sendBtn" class="send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+    <div class="setup-container">
+        <h2>Complete Profile</h2>
+        <select id="dept">
+            <option value="Computer Science">Computer Science</option>
+            <option value="Networking and Cloud">Networking and Cloud</option>
+            <option value="Cyber Security">Cyber Security</option>
+            <option value="AI">AI</option>
+            <option value="Software Development">Software Development</option>
+        </select>
+        <br><br>
+        <select id="level">
+            <option value="ND1">ND1</option>
+            <option value="ND2">ND2</option>
+            <option value="HND1">HND1</option>
+            <option value="HND2">HND2</option>
+        </select>
+        <br><br>
+        <button id="saveBtn" class="send-btn" style="height:45px; width:100%">Enter Hub</button>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        document.getElementById('saveBtn').onclick = async () => {
+            const user = auth.currentUser;
+            await setDoc(doc(db, "users", user.uid), {
+                name: user.displayName,
+                email: user.email,
+                dept: document.getElementById('dept').value,
+                level: document.getElementById('level').value,
+                isBanned: false,
+                role: user.email === 'liger4683@gmail.com' ? 'admin' : 'user'
+            });
+            window.location.href = "chat.html";
+        };
+    </script>
+</body>
+</html>

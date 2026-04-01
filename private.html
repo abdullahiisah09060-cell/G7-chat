@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G7 Hitech | Private Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="chat-wrapper">
+        <div class="main-chat">
+            <div class="chat-header">
+                <button class="menu-btn" onclick="location.href='chat.html'"><i class="fas fa-arrow-left"></i></button>
+                <div class="header-info">
+                    <span id="targetUserName" style="font-weight: 600;">Private Chat</span>
+                    <p id="targetUserStatus" style="font-size: 0.65rem; color: var(--text-dim);">Secure Connection</p>
+                </div>
+            </div>
+
+            <div id="messages">
+                <div style="text-align: center; color: var(--text-dim); font-size: 0.8rem; margin-top: 20px;">
+                    <i class="fas fa-lock"></i> Messages are end-to-end encrypted within G7 Hub.
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="msgInput" placeholder="Type a private message..." autocomplete="off">
+                <button id="sendBtn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const msgDiv = document.getElementById('messages');
+        const msgInput = document.getElementById('msgInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Get the ID of the person we are chatting with from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUid = urlParams.get('uid');
+
+        if (!targetUid) {
+            alert("No user selected!");
+            window.location.href = 'chat.html';
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) return window.location.href = 'index.html';
+
+            // Get target user's name
+            const targetDoc = await getDoc(doc(db, "users", targetUid));
+            if (targetDoc.exists()) {
+                document.getElementById('targetUserName').innerText = targetDoc.data().name;
+            }
+
+            // Create a unique Room ID for the two users
+            // We sort the IDs so it's always "UserA_UserB" regardless of who starts it
+            const chatId = [user.uid, targetUid].sort().join('_');
+
+            // Load Private Messages
+            const q = query(collection(db, "private_messages", chatId, "messages"), orderBy("createdAt"));
+            onSnapshot(q, (snapshot) => {
+                msgDiv.innerHTML = '<div style="text-align: center; color: var(--text-dim); font-size: 0.8rem; margin-top: 20px;"><i class="fas fa-lock"></i> Secure Private Chat</div>';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const isMe = data.senderId === user.uid;
+                    msgDiv.innerHTML += `
+                        <div class="msg ${isMe ? 'me' : ''}">
+                            <div>${data.text}</div>
+                        </div>`;
+                });
+                msgDiv.scrollTop = msgDiv.scrollHeight;
+            });
+
+            // Send Private Message
+            sendBtn.onclick = async () => {
+                if (msgInput.value.trim() === "") return;
+                const text = msgInput.value;
+                msgInput.value = "";
+
+                await addDoc(collection(db, "private_messages", chatId, "messages"), {
+                    text: text,
+                    senderId: user.uid,
+                    createdAt: serverTimestamp()
+                });
+            };
+            
+            // Allow "Enter" key to send
+            msgInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendBtn.click();
+            });
+        });
+    </script>
+</body>
+</html>

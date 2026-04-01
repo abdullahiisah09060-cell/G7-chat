@@ -9,33 +9,24 @@
 </head>
 <body>
     <div class="sidebar-overlay" id="overlay"></div>
-
     <div class="chat-wrapper">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3 style="color: var(--primary);">G7 Hitech</h3>
+                <h3 style="color:var(--primary)">G7 Hitech</h3>
                 <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
             </div>
-            
             <div class="user-profile-sm">
-                <p id="userName" style="font-weight: 600; font-size: 0.9rem;">Loading...</p>
-                <p id="userDept" style="font-size: 0.75rem; color: var(--text-dim);"></p>
+                <p id="userName" style="font-weight:600;font-size:0.9rem">Loading...</p>
+                <p id="userDept" style="font-size:0.7rem;color:var(--text-dim)"></p>
             </div>
-            
-            <hr style="border: 0.5px solid var(--border-color); margin: 15px 0;">
-            
-            <div class="online-users-section">
-                <p style="font-size: 0.75rem; color: var(--primary); font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">Direct Messages</p>
-                <div id="userList" style="flex: 1; overflow-y: auto;"></div>
+            <hr style="border:0.5px solid var(--border-color);margin:12px 0">
+            <div class="online-users-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+                <p style="font-size:0.7rem;color:var(--primary);font-weight:700;margin-bottom:8px;text-transform:uppercase">Direct Messages</p>
+                <div id="userList" style="flex:1;overflow-y:auto"></div>
             </div>
-
-            <div class="sidebar-actions" style="margin-top: auto;">
-                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none" class="action-btn admin">
-                    <i class="fas fa-user-shield"></i> Admin Panel
-                </button>
-                <button id="logoutBtn" class="action-btn logout">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
+            <div class="sidebar-actions">
+                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none" class="action-btn admin"><i class="fas fa-user-shield"></i> Admin</button>
+                <button id="logoutBtn" class="action-btn logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
 
@@ -43,77 +34,45 @@
             <div class="chat-header">
                 <button class="menu-btn" id="openSidebar"><i class="fas fa-bars"></i></button>
                 <div class="header-info">
-                    <span id="chatTitle" style="font-weight: 600;">Main Group Chat</span>
-                    <p style="font-size: 0.65rem; color: #28a745;">• Online</p>
+                    <span id="chatTitle" style="font-weight:600">Main Group</span>
+                    <p style="font-size:0.6rem;color:#28a745">• Live</p>
                 </div>
             </div>
-
-            <div id="messages">
-                </div>
-
+            <div id="messages"></div>
             <div class="input-area">
-                <input type="file" id="fileInput" style="display: none;" accept="image/*, .pdf, .doc, .docx, .txt">
-                
-                <button class="action-btn" onclick="document.getElementById('fileInput').click()" style="background: none; color: var(--text-dim); width: auto; padding: 0 5px;">
-                    <i class="fas fa-paperclip" style="font-size: 1.2rem;"></i>
+                <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx,.txt">
+                <button onclick="document.getElementById('fileInput').click()" style="background:none;border:none;color:var(--text-dim);padding:0 8px">
+                    <i class="fas fa-paperclip" style="font-size:1.2rem"></i>
                 </button>
-
-                <input type="text" id="msgInput" placeholder="Type a message..." autocomplete="off">
-                
-                <button id="sendBtn" class="send-btn">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <input type="text" id="msgInput" placeholder="Message..." autocomplete="off">
+                <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { auth, ADMIN_EMAILS } from './firebase-config.js';
+        const side = document.getElementById('sidebar'), over = document.getElementById('overlay');
+        const open = document.getElementById('openSidebar'), close = document.getElementById('closeSidebar');
         
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const openBtn = document.getElementById('openSidebar');
-        const closeBtn = document.getElementById('closeSidebar');
-        const fileInput = document.getElementById('fileInput');
+        const toggle = (s) => { 
+            side.classList.toggle('active', s); 
+            over.classList.toggle('active', s); 
+        };
+        open.onclick = () => toggle(true);
+        close.onclick = over.onclick = () => toggle(false);
 
-        // Sidebar Toggle
-        const toggleSidebar = (state) => {
-            if(state) {
-                sidebar.classList.add('active');
-                overlay.classList.add('active');
-            } else {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            }
+        document.getElementById('fileInput').onchange = (e) => {
+            const f = e.target.files[0];
+            if (f) f.size > 10*1024*1024 ? alert("Max 10MB") : window.uploadFile(f);
         };
 
-        openBtn.onclick = () => toggleSidebar(true);
-        closeBtn.onclick = overlay.onclick = () => toggleSidebar(false);
-
-        // Handle File Selection
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.size > 10 * 1024 * 1024) { // 10MB Limit
-                    return alert("File too big! Keep it under 10MB.");
-                }
-                // Call the upload function from app.js
-                window.uploadFile(file);
-            }
-        };
-
-        // Logout Logic
         document.getElementById('logoutBtn').onclick = () => {
-            if(confirm("Logout from G7 Hitech?")) {
-                auth.signOut().then(() => window.location.href = 'index.html');
-            }
+            if(confirm("Logout?")) auth.signOut().then(() => location.href='index.html');
         };
 
-        // Admin Visibility
-        auth.onAuthStateChanged(user => {
-            if (user && ADMIN_EMAILS.includes(user.email)) {
-                document.getElementById('adminBtn').style.display = 'block';
-            }
+        auth.onAuthStateChanged(u => {
+            if (u && ADMIN_EMAILS.includes(u.email)) document.getElementById('adminBtn').style.display='block';
         });
     </script>
     <script type="module" src="app.js"></script>

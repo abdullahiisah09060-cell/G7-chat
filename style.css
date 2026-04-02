@@ -17,25 +17,26 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* FIX: Locks the app to the screen size so it doesn't scroll away */
+/* CRITICAL: Fixes the bouncing and locking issue */
 html, body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
     height: 100vh;
     width: 100vw;
-    overflow: hidden;
+    overflow: hidden; /* Prevents the whole page from scrolling */
     position: fixed; 
 }
 
+/* Main Container Layout */
 .chat-wrapper {
     display: flex;
-    flex-direction: column; /* Stack header, messages, and input vertically */
+    flex-direction: column; /* Stacks Header -> Messages -> Input */
     height: 100vh;
     width: 100vw;
 }
 
-/* Header stays at the top */
+/* Header: Locked at Top */
 .chat-header {
     height: 60px;
     background: #151823;
@@ -43,22 +44,22 @@ html, body {
     align-items: center;
     padding: 0 15px;
     border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0; /* Prevents header from squishing */
+    flex-shrink: 0; /* Prevents it from being squashed */
 }
 
-/* MESSAGES: This is the ONLY part that scrolls */
+/* MESSAGES AREA: This is the ONLY part that scrolls */
 #messages {
-    flex: 1; /* Takes up all available space in the middle */
+    flex: 1; /* Takes all available space between header and input */
     overflow-y: auto;
     padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     background: var(--bg-dark);
-    -webkit-overflow-scrolling: touch; /* Smooth scroll for mobile */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile */
 }
 
-/* INPUT AREA: Permanently locked at the bottom */
+/* INPUT AREA: Locked at the Bottom */
 .input-area {
     height: 70px;
     background: #151823;
@@ -67,7 +68,7 @@ html, body {
     gap: 10px;
     padding: 0 15px;
     border-top: 1px solid var(--border-color);
-    flex-shrink: 0; /* Stops the input from being pushed off screen */
+    flex-shrink: 0; /* Ensures it never disappears */
 }
 
 #msgInput {
@@ -75,7 +76,7 @@ html, body {
     background: #0f111a;
     border: 1px solid var(--border-color);
     color: white;
-    padding: 12px;
+    padding: 12px 15px;
     border-radius: 25px;
     outline: none;
     font-size: 16px; /* Prevents auto-zoom on iPhone */
@@ -92,17 +93,18 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
-/* MESSAGE BUBBLES */
+/* Message Bubble Styling */
 .msg {
     max-width: 85%;
     padding: 10px 14px;
     border-radius: 18px;
     background: #252a3d;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     align-self: flex-start;
-    position: relative;
+    word-wrap: break-word;
 }
 
 .msg.me {
@@ -111,25 +113,23 @@ html, body {
     border-bottom-right-radius: 4px;
 }
 
-/* Name and Time Info */
 .msg-info {
     font-size: 0.65rem;
     color: var(--text-dim);
     margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
+    display: block;
     font-weight: 600;
 }
 
 .msg-time {
     font-size: 0.6rem;
-    opacity: 0.7;
-    margin-top: 4px;
+    opacity: 0.6;
     display: block;
     text-align: right;
+    margin-top: 4px;
 }
 
-/* Sidebar Drawer for Mobile */
+/* Sidebar Drawer */
 .sidebar {
     position: fixed;
     left: -280px; 
@@ -141,6 +141,7 @@ html, body {
     transition: 0.3s ease;
     box-shadow: 10px 0 20px rgba(0,0,0,0.5);
 }
+
 .sidebar.active { left: 0; }
 
 .sidebar-overlay {
@@ -160,7 +161,6 @@ html, body {
     display: block;
 }
 
-/* Google Icon Fix */
 .google-icon {
     width: 20px;
     height: 20px;

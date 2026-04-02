@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>G7 Hitech | Tech Hub</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -11,23 +11,24 @@
 
     <div class="login-container">
         <div class="logo-area">
-            <h1 style="color: var(--primary); font-size: 2.2rem; font-weight: 600;">G7 Hitech</h1>
-            <p style="color: var(--text-dim); font-size: 0.85rem; letter-spacing: 1px;">INNOVATION • EXCELLENCE</p>
+            <h1 style="color: var(--primary); font-size: 2.5rem; font-weight: 700; margin-bottom: 5px;">G7 Hitech</h1>
+            <p style="color: var(--text-dim); font-size: 0.9rem; letter-spacing: 2px; font-weight: 600;">INNOVATION • EXCELLENCE</p>
         </div>
 
-        <div class="welcome-text" style="margin: 30px 0; text-align: left;">
-            <h2 style="font-size: 1.1rem; margin-bottom: 10px;">Welcome, Techie!</h2>
-            <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.5;">
-                Join the ultimate hub for <b>G7</b> students. Connect, share ideas, and chat with peers across all tech departments.
+        <div class="welcome-text" style="margin: 40px 0; text-align: center;">
+            <h2 style="font-size: 1.3rem; margin-bottom: 12px; color: #fff;">Welcome, Techie!</h2>
+            <p style="font-size: 1rem; color: var(--text-dim); line-height: 1.6;">
+                The ultimate hub for <b>G7</b> students. <br>
+                Connect, share, and build the future.
             </p>
         </div>
 
         <button id="loginBtn" class="google-btn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa/google.svg" width="20" alt="G">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" class="google-icon" alt="G">
             Sign in with Google
         </button>
 
-        <div class="footer-note" style="margin-top: 25px; font-size: 0.7rem; color: #555; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <div class="footer-note" style="margin-top: 30px; font-size: 0.75rem; color: #666; border-top: 1px solid var(--border-color); padding-top: 20px;">
             <p>© 2026 G7 Hitech Dev Team. <br> Authorized Student Access Only.</p>
         </div>
     </div>
@@ -54,6 +55,7 @@
         const loginBtn = document.getElementById('loginBtn');
 
         loginBtn.onclick = async () => {
+            const originalContent = loginBtn.innerHTML;
             loginBtn.innerHTML = "Connecting...";
             loginBtn.style.opacity = "0.7";
             loginBtn.disabled = true;
@@ -77,8 +79,8 @@
                 }
             } catch (error) {
                 console.error("Auth Error:", error);
-                alert("Login failed. Check your internet or browser pop-up settings.");
-                loginBtn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa/google.svg" width="20"> Sign in with Google';
+                alert("Login failed. Check your internet.");
+                loginBtn.innerHTML = originalContent;
                 loginBtn.style.opacity = "1";
                 loginBtn.disabled = false;
             }

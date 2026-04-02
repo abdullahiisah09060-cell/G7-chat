@@ -8,6 +8,7 @@
     --border-color: #2d3245;
     --danger: #ff4d4d;
     --success: #28a745;
+    --admin-gold: #ffcc00;
 }
 
 * {
@@ -17,26 +18,25 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* CRITICAL: Fixes the bouncing and locking issue */
+/* FIX: Uses dynamic viewport height (dvh) to stay above mobile keyboards */
 html, body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
-    height: 100vh;
+    height: 100dvh; 
     width: 100vw;
-    overflow: hidden; /* Prevents the whole page from scrolling */
+    overflow: hidden;
     position: fixed; 
 }
 
-/* Main Container Layout */
 .chat-wrapper {
     display: flex;
-    flex-direction: column; /* Stacks Header -> Messages -> Input */
-    height: 100vh;
+    flex-direction: column;
+    height: 100dvh; 
     width: 100vw;
 }
 
-/* Header: Locked at Top */
+/* Header stays put */
 .chat-header {
     height: 60px;
     background: #151823;
@@ -44,22 +44,23 @@ html, body {
     align-items: center;
     padding: 0 15px;
     border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0; /* Prevents it from being squashed */
+    flex-shrink: 0;
 }
 
-/* MESSAGES AREA: This is the ONLY part that scrolls */
+/* MESSAGES: The only part allowed to scroll */
 #messages {
-    flex: 1; /* Takes all available space between header and input */
+    flex: 1;
     overflow-y: auto;
     padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     background: var(--bg-dark);
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile */
+    /* Extra padding at bottom so last message isn't hidden by input */
+    padding-bottom: 30px; 
 }
 
-/* INPUT AREA: Locked at the Bottom */
+/* INPUT AREA: Stays locked at the bottom */
 .input-area {
     height: 70px;
     background: #151823;
@@ -68,7 +69,8 @@ html, body {
     gap: 10px;
     padding: 0 15px;
     border-top: 1px solid var(--border-color);
-    flex-shrink: 0; /* Ensures it never disappears */
+    flex-shrink: 0;
+    margin-bottom: env(safe-area-inset-bottom); /* Fix for iPhone notches */
 }
 
 #msgInput {
@@ -79,7 +81,7 @@ html, body {
     padding: 12px 15px;
     border-radius: 25px;
     outline: none;
-    font-size: 16px; /* Prevents auto-zoom on iPhone */
+    font-size: 16px; 
 }
 
 .send-btn {
@@ -93,10 +95,23 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
-/* Message Bubble Styling */
+/* --- ADMIN BADGE STYLE --- */
+.admin-badge {
+    background: var(--admin-gold);
+    color: #000;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/* Message Bubble */
 .msg {
     max-width: 85%;
     padding: 10px 14px;
@@ -141,7 +156,6 @@ html, body {
     transition: 0.3s ease;
     box-shadow: 10px 0 20px rgba(0,0,0,0.5);
 }
-
 .sidebar.active { left: 0; }
 
 .sidebar-overlay {
@@ -152,16 +166,3 @@ html, body {
     z-index: 1999;
 }
 .sidebar-overlay.active { display: block; }
-
-/* Image styling */
-.chat-img {
-    max-width: 100%;
-    border-radius: 10px;
-    margin-top: 5px;
-    display: block;
-}
-
-.google-icon {
-    width: 20px;
-    height: 20px;
-}

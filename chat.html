@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G7 Hitech | Chat</title>
+    <title>G7 Hitech | Main Chat</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -11,40 +11,43 @@
     <div class="sidebar-overlay" id="overlay"></div>
     <div class="chat-wrapper">
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h3 style="color:var(--primary)">G7 Hitech</h3>
-                <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
+                <h3 style="color:var(--primary)">G7 Hitech Hub</h3>
+                <p id="userName" style="font-size: 0.85rem; margin-top: 10px;">Loading Profile...</p>
             </div>
-            <div class="user-profile-sm">
-                <p id="userName" style="font-weight:600;font-size:0.9rem">Loading...</p>
-                <p id="userDept" style="font-size:0.7rem;color:var(--text-dim)"></p>
-            </div>
-            <hr style="border:0.5px solid var(--border-color);margin:12px 0">
-            <div class="online-users-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
-                <p style="font-size:0.7rem;color:var(--primary);font-weight:700;margin-bottom:8px;text-transform:uppercase">Direct Messages</p>
-                <div id="userList" style="flex:1;overflow-y:auto"></div>
-            </div>
-            <div class="sidebar-actions">
-                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none" class="action-btn admin"><i class="fas fa-user-shield"></i> Admin</button>
-                <button id="logoutBtn" class="action-btn logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            
+            <div id="userList" style="flex:1; overflow-y:auto; padding: 10px;">
+                </div>
+
+            <div style="padding: 15px; border-top: 1px solid var(--border-color);">
+                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none; width:100%; background: var(--admin-gold); color:black; border:none; padding:10px; border-radius:8px; margin-bottom:10px; font-weight:bold;">
+                    <i class="fas fa-user-shield"></i> ADMIN PANEL
+                </button>
+                <button id="logoutBtn" style="width:100%; background: #333; color:white; border:none; padding:10px; border-radius:8px;">
+                    Logout
+                </button>
             </div>
         </div>
 
         <div class="main-chat">
             <div class="chat-header">
-                <button class="menu-btn" id="openSidebar"><i class="fas fa-bars"></i></button>
+                <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px;">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="header-info">
-                    <span id="chatTitle" style="font-weight:600">Main Group</span>
-                    <p style="font-size:0.6rem;color:#28a745">• Live</p>
+                    <span id="chatTitle" style="font-weight:600; display:block;">G7 GLOBAL CHAT</span>
+                    <span style="font-size:0.6rem; color:var(--whatsapp-green)">● ONLINE</span>
                 </div>
             </div>
+
             <div id="messages"></div>
+
             <div class="input-area">
-                <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx,.txt">
-                <button onclick="document.getElementById('fileInput').click()" style="background:none;border:none;color:var(--text-dim);padding:0 8px">
-                    <i class="fas fa-paperclip" style="font-size:1.2rem"></i>
+                <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx">
+                <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem;">
+                    <i class="fas fa-paperclip"></i>
                 </button>
-                <input type="text" id="msgInput" placeholder="Message..." autocomplete="off">
+                <input type="text" id="msgInput" placeholder="Type message..." autocomplete="off">
                 <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -53,27 +56,16 @@
     <script type="module">
         import { auth, ADMIN_EMAILS } from './firebase-config.js';
         const side = document.getElementById('sidebar'), over = document.getElementById('overlay');
-        const open = document.getElementById('openSidebar'), close = document.getElementById('closeSidebar');
         
-        const toggle = (s) => { 
-            side.classList.toggle('active', s); 
-            over.classList.toggle('active', s); 
-        };
-        open.onclick = () => toggle(true);
-        close.onclick = over.onclick = () => toggle(false);
-
-        document.getElementById('fileInput').onchange = (e) => {
-            const f = e.target.files[0];
-            if (f) f.size > 10*1024*1024 ? alert("Max 10MB") : window.uploadFile(f);
-        };
-
-        document.getElementById('logoutBtn').onclick = () => {
-            if(confirm("Logout?")) auth.signOut().then(() => location.href='index.html');
-        };
+        document.getElementById('openSidebar').onclick = () => { side.classList.add('active'); over.classList.add('active'); };
+        over.onclick = () => { side.classList.remove('active'); over.classList.remove('active'); };
 
         auth.onAuthStateChanged(u => {
+            if (!u) window.location.href='index.html';
             if (u && ADMIN_EMAILS.includes(u.email)) document.getElementById('adminBtn').style.display='block';
         });
+
+        document.getElementById('logoutBtn').onclick = () => auth.signOut();
     </script>
     <script type="module" src="app.js"></script>
 </body>

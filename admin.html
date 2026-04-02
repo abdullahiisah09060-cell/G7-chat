@@ -3,27 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G7 Hitech | Admin Panel</title>
+    <title>G7 Command Center</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="setup-page">
-        <div class="setup-container" style="max-width: 500px; width: 95%;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: var(--primary);">Admin Panel</h2>
-                <button onclick="location.href='chat.html'" class="send-btn" style="width: auto; padding: 5px 15px; height: 35px; font-size: 0.8rem;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <p style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 15px; text-align: left;">
-                Manage all registered G7 students below.
-            </p>
-
-            <div id="userList" style="text-align: left; max-height: 60vh; overflow-y: auto;">
-                <p style="text-align: center; color: var(--text-dim);">Loading users...</p>
-            </div>
+    <div class="chat-wrapper">
+        <div class="chat-header">
+            <button onclick="location.href='chat.html'" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px;">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h3 style="color:var(--admin-gold)">COMMAND CENTER</h3>
+        </div>
+        
+        <div id="messages" style="background:#050505;">
+            <p style="color:var(--text-dim); padding:10px; font-size:0.8rem;">G7 STUDENT DIRECTORY</p>
+            <div id="userListAdmin"></div>
         </div>
     </div>
 
@@ -31,57 +25,33 @@
         import { auth, db, ADMIN_EMAILS } from './firebase-config.js';
         import { collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Security Check: Only allow the 3 Admins
-        auth.onAuthStateChanged(user => {
-            if (!user || !ADMIN_EMAILS.includes(user.email)) {
-                alert("Unauthorized Access!");
-                window.location.href = 'chat.html';
-            }
+        auth.onAuthStateChanged(u => {
+            if (!u || !ADMIN_EMAILS.includes(u.email)) location.href='chat.html';
         });
 
-        // Real-time User Management
-        onSnapshot(collection(db, "users"), (snap) => {
-            const list = document.getElementById('userList');
+        onSnapshot(collection(db, "users"), snap => {
+            const list = document.getElementById('userListAdmin');
             list.innerHTML = '';
-            
             snap.forEach(u => {
                 const user = u.data();
-                const isUserAdmin = ADMIN_EMAILS.includes(user.email);
-                
-                // Don't show "Ban" button for other admins (to prevent fighting lol)
-                const actionButton = isUserAdmin ? 
-                    `<span style="color:var(--primary); font-size:0.7rem; font-weight:bold;">OFFICIAL ADMIN</span>` : 
-                    `<button class="${user.isBanned ? 'unban-btn' : 'ban-btn'}" 
-                             onclick="toggleBan('${u.id}', ${user.isBanned})">
-                        ${user.isBanned ? 'Unban' : 'Ban'}
-                    </button>`;
+                if (ADMIN_EMAILS.includes(user.email)) return; // Hide admins
 
                 list.innerHTML += `
-                    <div class="user-row" style="border-bottom: 1px solid var(--border-color); padding: 12px 0; display: flex; justify-content: space-between; align-items: center;">
-                        <div style="flex: 1;">
-                            <div style="font-size: 0.9rem; font-weight: 600; color: ${user.isBanned ? '#ff4d4d' : 'white'}">
-                                ${user.name} ${user.isBanned ? '(BANNED)' : ''}
-                            </div>
-                            <div style="font-size: 0.7rem; color: var(--text-dim);">${user.dept} | ${user.level}</div>
-                        </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); padding:15px; border-radius:10px; margin-bottom:10px;">
                         <div>
-                            ${actionButton}
+                            <p style="font-weight:bold; color:${user.isBanned ? 'red' : 'white'}">${user.name}</p>
+                            <p style="font-size:0.7rem; color:var(--text-dim)">${user.dept} | ${user.level}</p>
                         </div>
+                        <button class="${user.isBanned ? 'unban-btn' : 'ban-btn'}" onclick="window.toggleBan('${u.id}', ${user.isBanned})">
+                            ${user.isBanned ? 'RESTORE' : 'BAN'}
+                        </button>
                     </div>`;
             });
         });
 
-        // Toggle Ban Logic
-        window.toggleBan = async (id, currentStatus) => {
-            const action = currentStatus ? "Unban" : "Ban";
-            if(confirm(`Are you sure you want to ${action} this student?`)) {
-                try {
-                    await updateDoc(doc(db, "users", id), { 
-                        isBanned: !currentStatus 
-                    });
-                } catch (e) {
-                    alert("Error: " + e.message);
-                }
+        window.toggleBan = async (id, status) => {
+            if(confirm("Confirm action on student?")) {
+                await updateDoc(doc(db, "users", id), { isBanned: !status });
             }
         };
     </script>

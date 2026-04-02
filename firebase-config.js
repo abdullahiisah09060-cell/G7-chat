@@ -16,7 +16,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const provider = new GoogleAuthProvider();
 
-// All Admin Emails in one place
+// OFFICIAL ADMIN LIST
 export const ADMIN_EMAILS = [
   "liger4683@gmail.com",
   "abdullahiisah09060@gmail.com",

@@ -17,89 +17,25 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* FIX: Stops screen from bouncing and hiding input field */
-body, html {
+/* FIX: Locks the app to the screen size so it doesn't scroll away */
+html, body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
-    height: 100%;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     overflow: hidden;
     position: fixed; 
 }
 
-/* --- LANDING & SETUP --- */
-.landing-page, .setup-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: radial-gradient(circle at top right, #1a2a6c, #0f111a);
-}
-
-.login-container, .setup-container {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    border: 1px solid var(--border-color);
-}
-
-/* --- LAYOUT STRUCTURE --- */
 .chat-wrapper {
     display: flex;
-    flex-direction: column; /* Force vertical stack for mobile */
+    flex-direction: column; /* Stack header, messages, and input vertically */
     height: 100vh;
     width: 100vw;
-    position: relative;
 }
 
-/* SIDEBAR: Drawer Style */
-.sidebar {
-    width: 280px;
-    background: #151823;
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    transition: 0.3s ease;
-    z-index: 2000;
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        left: -100%;
-        height: 100%;
-        box-shadow: 10px 0 20px rgba(0,0,0,0.5);
-    }
-    .sidebar.active {
-        left: 0;
-    }
-}
-
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: 1999;
-}
-.sidebar-overlay.active { display: block; }
-
-/* --- MAIN CHAT AREA --- */
-.main-chat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
+/* Header stays at the top */
 .chat-header {
     height: 60px;
     background: #151823;
@@ -107,57 +43,31 @@ body, html {
     align-items: center;
     padding: 0 15px;
     border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevents header from squishing */
 }
 
-/* --- MESSAGES: The only part that scrolls --- */
+/* MESSAGES: This is the ONLY part that scrolls */
 #messages {
-    flex: 1;
+    flex: 1; /* Takes up all available space in the middle */
     overflow-y: auto;
     padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     background: var(--bg-dark);
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll for mobile */
 }
 
-.msg {
-    max-width: 85%;
-    padding: 10px 14px;
-    border-radius: 15px;
-    background: #252a3d;
-    font-size: 0.9rem;
-    align-self: flex-start;
-    word-wrap: break-word;
-}
-
-.msg.me {
-    align-self: flex-end;
-    background: var(--primary);
-    border-bottom-right-radius: 4px;
-}
-
-.msg-info {
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    margin-bottom: 4px;
-    display: block;
-    font-weight: 600;
-}
-
-.msg.me .msg-info { color: #d1e7ff; }
-
-/* --- INPUT AREA: Fixed at Bottom --- */
+/* INPUT AREA: Permanently locked at the bottom */
 .input-area {
-    padding: 10px 15px;
+    height: 70px;
     background: #151823;
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 0 15px;
     border-top: 1px solid var(--border-color);
-    height: 70px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Stops the input from being pushed off screen */
 }
 
 #msgInput {
@@ -168,7 +78,7 @@ body, html {
     padding: 12px;
     border-radius: 25px;
     outline: none;
-    font-size: 16px; /* Fixes zoom issue */
+    font-size: 16px; /* Prevents auto-zoom on iPhone */
 }
 
 .send-btn {
@@ -184,24 +94,74 @@ body, html {
     justify-content: center;
 }
 
-/* --- GOOGLE LOGO FIX --- */
+/* MESSAGE BUBBLES */
+.msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    background: #252a3d;
+    font-size: 0.9rem;
+    align-self: flex-start;
+    position: relative;
+}
+
+.msg.me {
+    align-self: flex-end;
+    background: var(--primary);
+    border-bottom-right-radius: 4px;
+}
+
+/* Name and Time Info */
+.msg-info {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+.msg-time {
+    font-size: 0.6rem;
+    opacity: 0.7;
+    margin-top: 4px;
+    display: block;
+    text-align: right;
+}
+
+/* Sidebar Drawer for Mobile */
+.sidebar {
+    position: fixed;
+    left: -280px; 
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: #151823;
+    z-index: 2000;
+    transition: 0.3s ease;
+    box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+}
+.sidebar.active { left: 0; }
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 1999;
+}
+.sidebar-overlay.active { display: block; }
+
+/* Image styling */
+.chat-img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Google Icon Fix */
 .google-icon {
     width: 20px;
     height: 20px;
-    object-fit: contain;
-}
-
-.google-btn {
-    width: 100%;
-    background: white;
-    padding: 12px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #333;
-    font-weight: 600;
-    margin-top: 15px;
-    border: none;
 }

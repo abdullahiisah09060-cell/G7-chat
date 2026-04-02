@@ -2,53 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>G7 Hitech | Setup Profile</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="setup-page">
     <div class="setup-container">
-        <h2 style="margin-bottom: 10px; color: var(--primary);">Finish Setup</h2>
-        <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px;">Tell us your department and level to continue.</p>
+        <h2 style="margin-bottom: 10px; color: var(--primary); font-weight: 700;">Complete Profile</h2>
+        <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 30px;">Set your academic details to join the G7 hub.</p>
         
-        <label style="display:block; text-align:left; font-size: 0.8rem; margin-bottom: 5px; color: var(--text-dim);">Select Department</label>
-        <select id="dept">
-            <option value="Computer Science">Computer Science</option>
-            <option value="Networking and Cloud">Networking and Cloud</option>
-            <option value="Cyber Security">Cyber Security</option>
-            <option value="AI">AI</option>
-            <option value="Software Development">Software Development</option>
-        </select>
+        <div style="text-align: left; margin-bottom: 20px;">
+            <label style="display:block; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-dim); font-weight: 600;">Department</label>
+            <select id="dept" style="width: 100%; padding: 12px; background: #0b0d14; border: 1px solid var(--border-color); color: white; border-radius: 10px; font-size: 1rem;">
+                <option value="Computer Science">Computer Science</option>
+                <option value="Networking and Cloud">Networking and Cloud</option>
+                <option value="Cyber Security">Cyber Security</option>
+                <option value="AI & Robotics">AI & Robotics</option>
+                <option value="Software Development">Software Development</option>
+            </select>
+        </div>
 
-        <label style="display:block; text-align:left; font-size: 0.8rem; margin-bottom: 5px; color: var(--text-dim);">Select Level</label>
-        <select id="level">
-            <option value="ND1">ND1</option>
-            <option value="ND2">ND2</option>
-            <option value="HND1">HND1</option>
-            <option value="HND2">HND2</option>
-        </select>
+        <div style="text-align: left; margin-bottom: 30px;">
+            <label style="display:block; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-dim); font-weight: 600;">Level</label>
+            <select id="level" style="width: 100%; padding: 12px; background: #0b0d14; border: 1px solid var(--border-color); color: white; border-radius: 10px; font-size: 1rem;">
+                <option value="ND1">ND1</option>
+                <option value="ND2">ND2</option>
+                <option value="HND1">HND1</option>
+                <option value="HND2">HND2</option>
+            </select>
+        </div>
 
-        <button id="saveBtn" class="send-btn" style="height:50px; width:100%; border-radius: 10px; margin-top: 10px; font-size: 1rem;">
-            Create Profile & Enter
+        <button id="saveBtn" class="send-btn" style="height:55px; width:100%; border-radius: 12px; font-size: 1.1rem; font-weight: 600;">
+            Launch Profile 🚀
         </button>
     </div>
 
     <script type="module">
+        // Import your central config
         import { auth, db, ADMIN_EMAILS } from './firebase-config.js';
-        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const saveBtn = document.getElementById('saveBtn');
 
+        // Ensure user is actually logged in before showing the form
+        onAuthStateChanged(auth, (user) => {
+            if (!user) window.location.href = "index.html";
+        });
+
         saveBtn.onclick = async () => {
             const user = auth.currentUser;
-            if(!user) return alert("Session expired. Please login again.");
+            if(!user) return;
 
-            saveBtn.innerText = "Setting up...";
+            saveBtn.innerText = "Configuring Space...";
             saveBtn.disabled = true;
+            saveBtn.style.opacity = "0.7";
 
             try {
-                // Check if current user email is in the admin list we set in config
+                // Determine if this user is a pre-defined Admin
                 const isAdmin = ADMIN_EMAILS.includes(user.email);
 
                 await setDoc(doc(db, "users", user.uid), {
@@ -60,15 +72,19 @@
                     level: document.getElementById('level').value,
                     isBanned: false,
                     role: isAdmin ? 'admin' : 'user',
-                    createdAt: new Date()
+                    unreadCount: 0,
+                    lastSeen: serverTimestamp(),
+                    createdAt: serverTimestamp()
                 });
 
+                // Successful setup, take them to the hub
                 window.location.href = "chat.html";
             } catch (error) {
                 console.error("Setup Error:", error);
-                alert("Error saving profile: " + error.message);
-                saveBtn.innerText = "Create Profile & Enter";
+                alert("Critical Error: " + error.message);
+                saveBtn.innerText = "Launch Profile 🚀";
                 saveBtn.disabled = false;
+                saveBtn.style.opacity = "1";
             }
         };
     </script>

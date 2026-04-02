@@ -3,33 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G7 Hitech | Tech Hub</title>
+    <title>G7 Hitech | Innovation Hub</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Smooth Entrance Animation */
+        .login-container {
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body class="landing-page">
 
     <div class="login-container">
         <div class="logo-area">
-            <h1 style="color: var(--primary); font-size: 2.5rem; font-weight: 700; margin-bottom: 5px;">G7 Hitech</h1>
-            <p style="color: var(--text-dim); font-size: 0.9rem; letter-spacing: 2px; font-weight: 600;">INNOVATION • EXCELLENCE</p>
+            <h1 style="color: var(--primary); font-size: 2.8rem; font-weight: 700; letter-spacing: -1px;">G7 Hitech</h1>
+            <p style="color: var(--text-dim); font-size: 0.85rem; letter-spacing: 3px; font-weight: 600; text-transform: uppercase;">Innovation • Excellence</p>
         </div>
 
-        <div class="welcome-text" style="margin: 40px 0; text-align: center;">
-            <h2 style="font-size: 1.3rem; margin-bottom: 12px; color: #fff;">Welcome, Techie!</h2>
+        <div class="welcome-text" style="margin: 40px 0;">
+            <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Connect with the Best.</h2>
             <p style="font-size: 1rem; color: var(--text-dim); line-height: 1.6;">
-                The ultimate hub for <b>G7</b> students. <br>
-                Connect, share, and build the future.
+                The official digital hub for <b>G7 Computer Faculty</b>. Join the conversation and build the future.
             </p>
         </div>
 
         <button id="loginBtn" class="google-btn">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" class="google-icon" alt="G">
-            Sign in with Google
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width: 22px;" alt="G">
+            <span>Sign in with Google</span>
         </button>
 
-        <div class="footer-note" style="margin-top: 30px; font-size: 0.75rem; color: #666; border-top: 1px solid var(--border-color); padding-top: 20px;">
-            <p>© 2026 G7 Hitech Dev Team. <br> Authorized Student Access Only.</p>
+        <div class="footer-note" style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <p style="font-size: 0.75rem; color: #555;">© 2026 G7 Hitech Dev Team. <br> Authorized Student Network Only.</p>
         </div>
     </div>
 
@@ -38,6 +47,7 @@
         import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Your Secure Config
         const firebaseConfig = {
             apiKey: "AIzaSyAYOaONlk9G1B4A6P0Xk_ynQ_Kd390fwDY",
             authDomain: "g7-group-chat.firebaseapp.com",
@@ -55,32 +65,37 @@
         const loginBtn = document.getElementById('loginBtn');
 
         loginBtn.onclick = async () => {
-            const originalContent = loginBtn.innerHTML;
-            loginBtn.innerHTML = "Connecting...";
-            loginBtn.style.opacity = "0.7";
+            loginBtn.innerHTML = "Securely Connecting...";
+            loginBtn.style.opacity = "0.6";
             loginBtn.disabled = true;
 
             try {
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
                 
+                // Check if user already exists in Faculty Database
                 const userDoc = await getDoc(doc(db, "users", user.uid));
 
                 if (userDoc.exists()) {
-                    if (userDoc.data().isBanned) {
-                        alert("Access Denied: Your account is suspended.");
+                    const userData = userDoc.data();
+                    
+                    // ADMIN BAN CHECK
+                    if (userData.isBanned) {
+                        alert("🚨 ACCESS DENIED: Your account has been suspended by the Admin.");
                         await auth.signOut();
                         location.reload();
                     } else {
+                        // User is clean, go to chat
                         window.location.href = "chat.html";
                     }
                 } else {
+                    // New user, go to setup profile
                     window.location.href = "setup.html";
                 }
             } catch (error) {
                 console.error("Auth Error:", error);
-                alert("Login failed. Check your internet.");
-                loginBtn.innerHTML = originalContent;
+                alert("Connection failed. Please check your network.");
+                loginBtn.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width: 22px;"> Sign in with Google';
                 loginBtn.style.opacity = "1";
                 loginBtn.disabled = false;
             }

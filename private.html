@@ -3,28 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>G7 Hitech | Private DM</title>
+    <title>Private Chat</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="chat-wrapper">
         <div class="chat-header">
-            <button onclick="location.href='chat.html'" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px;"><i class="fas fa-arrow-left"></i></button>
+            <button onclick="location.href='chat.html'" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px; cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
             <div>
-                <span id="targetUserName" style="font-weight:600; display:block;">Private Chat</span>
-                <span id="targetStatus" style="font-size:0.6rem; color:var(--text-dim)">SECURE DM</span>
+                <span id="targetUserName" style="font-weight:600; display:block;">...</span>
+                <span style="font-size:0.6rem; color:var(--whatsapp-green)">● Private Secure Chat</span>
             </div>
         </div>
-
-        <div id="messages">
-            <div style="text-align:center; color:var(--text-dim); font-size:0.7rem; margin-top:10px;"><i class="fas fa-lock"></i> End-to-end encrypted</div>
-        </div>
-
+        <div id="messages"></div>
         <div class="input-area">
-             <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf">
-             <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem;"><i class="fas fa-paperclip"></i></button>
-            <input type="text" id="msgInput" placeholder="Private message..." autocomplete="off">
+            <input type="text" id="msgInput" placeholder="Type private message..." autocomplete="off">
             <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>

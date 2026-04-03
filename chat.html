@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G7 Hitech | Main Chat</title>
+    <title>G7 Hitech | Global Chat</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -13,30 +13,22 @@
         <div class="sidebar" id="sidebar">
             <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
                 <h3 style="color:var(--primary)">G7 Hitech Hub</h3>
-                <p id="userName" style="font-size: 0.85rem; margin-top: 10px;">Loading Profile...</p>
+                <p id="userName" style="font-size: 0.85rem; margin-top: 10px;">User Profile</p>
+                <p id="userDept" style="font-size: 0.7rem; color: var(--text-dim);"></p>
             </div>
-            
-            <div id="userList" style="flex:1; overflow-y:auto; padding: 10px;">
-                </div>
-
-            <div style="padding: 15px; border-top: 1px solid var(--border-color);">
-                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none; width:100%; background: var(--admin-gold); color:black; border:none; padding:10px; border-radius:8px; margin-bottom:10px; font-weight:bold;">
-                    <i class="fas fa-user-shield"></i> ADMIN PANEL
-                </button>
-                <button id="logoutBtn" style="width:100%; background: #333; color:white; border:none; padding:10px; border-radius:8px;">
-                    Logout
-                </button>
+            <div id="userList" style="flex:1; overflow-y:auto; padding: 10px;"></div>
+            <div style="padding: 15px;">
+                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none; width:100%; background: var(--admin-gold); padding:10px; border-radius:8px; font-weight:bold; margin-bottom:10px;">ADMIN PANEL</button>
+                <button id="logoutBtn" style="width:100%; background: #333; color:white; padding:10px; border-radius:8px;">Logout</button>
             </div>
         </div>
 
         <div class="main-chat">
             <div class="chat-header">
-                <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px;">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="header-info">
-                    <span id="chatTitle" style="font-weight:600; display:block;">G7 GLOBAL CHAT</span>
-                    <span style="font-size:0.6rem; color:var(--whatsapp-green)">● ONLINE</span>
+                <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px;"><i class="fas fa-bars"></i></button>
+                <div>
+                    <span style="font-weight:600; display:block;">G7 GLOBAL HUB</span>
+                    <span style="font-size:0.6rem; color:var(--whatsapp-green)">● SYSTEM ONLINE</span>
                 </div>
             </div>
 
@@ -44,29 +36,19 @@
 
             <div class="input-area">
                 <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx">
-                <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem;">
-                    <i class="fas fa-paperclip"></i>
-                </button>
+                <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem;"><i class="fas fa-paperclip"></i></button>
                 <input type="text" id="msgInput" placeholder="Type message..." autocomplete="off">
                 <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
-
+    <script type="module" src="app.js"></script>
     <script type="module">
-        import { auth, ADMIN_EMAILS } from './firebase-config.js';
+        import { auth } from './firebase-config.js';
         const side = document.getElementById('sidebar'), over = document.getElementById('overlay');
-        
         document.getElementById('openSidebar').onclick = () => { side.classList.add('active'); over.classList.add('active'); };
         over.onclick = () => { side.classList.remove('active'); over.classList.remove('active'); };
-
-        auth.onAuthStateChanged(u => {
-            if (!u) window.location.href='index.html';
-            if (u && ADMIN_EMAILS.includes(u.email)) document.getElementById('adminBtn').style.display='block';
-        });
-
         document.getElementById('logoutBtn').onclick = () => auth.signOut();
     </script>
-    <script type="module" src="app.js"></script>
 </body>
 </html>

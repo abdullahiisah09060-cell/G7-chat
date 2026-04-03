@@ -1,100 +1,79 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>G7 Hitech | Global Chat</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>G7 Hitech | Global Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="sidebar-overlay" id="overlay"></div>
-    
-    <div class="chat-wrapper">
-        
-        <div class="sidebar" id="sidebar">
-            <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
-                <h3 style="color:var(--primary)">G7 Hitech Hub</h3>
-                <p id="userName" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;">User Profile</p>
-                <p id="userDept" style="font-size: 0.7rem; color: var(--text-dim);"></p>
-            </div>
-            
-            <div id="userList" style="flex:1; overflow-y:auto; padding: 10px;">
-                </div>
+    <div class="sidebar-overlay" id="overlay"></div>
+    
+    <div class="chat-wrapper">
+        
+        <div class="sidebar" id="sidebar">
+            <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
+                <h3 style="color:var(--primary)">G7 Hitech Hub</h3>
+                <p id="userName" style="font-size: 0.85rem; margin-top: 10px;">User Profile</p>
+                <p id="userDept" style="font-size: 0.7rem; color: var(--text-dim);"></p>
+            </div>
+            <div id="userList" style="flex:1; overflow-y:auto; padding: 10px;"></div>
+            <div style="padding: 15px;">
+                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none; width:100%; background: var(--admin-gold); padding:10px; border-radius:8px; font-weight:bold; margin-bottom:10px; border:none;">ADMIN PANEL</button>
+                <button id="logoutBtn" style="width:100%; background: #333; color:white; padding:10px; border-radius:8px; border:none; cursor:pointer;">Logout</button>
+            </div>
+        </div>
 
-            <div style="padding: 15px;">
-                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none; width:100%; background: var(--admin-gold); padding:12px; border-radius:8px; font-weight:bold; margin-bottom:10px; border:none; cursor:pointer;">ADMIN PANEL</button>
-                <button id="logoutBtn" style="width:100%; background: #222; color:white; padding:12px; border-radius:8px; border:none; cursor:pointer; font-weight:600;">Logout</button>
-            </div>
-        </div>
+        <div class="chat-header">
+            <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px; cursor:pointer;"><i class="fas fa-bars"></i></button>
+            <div>
+                <span style="font-weight:600; display:block;">G7 GLOBAL HUB</span>
+                <span style="font-size:0.6rem; color:var(--whatsapp-green)">● SYSTEM ONLINE</span>
+            </div>
+        </div>
 
-        <div class="chat-header">
-            <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px; cursor:pointer;"><i class="fas fa-bars"></i></button>
-            <div style="flex: 1;">
-                <span style="font-weight:600; display:block; letter-spacing: 0.5px;">G7 GLOBAL HUB</span>
-                <span style="font-size:0.6rem; color:var(--whatsapp-green); font-weight: bold;">● SYSTEM ONLINE</span>
-            </div>
-        </div>
+        <div id="messages"></div>
 
-        <div id="messages"></div>
+        <div class="input-area">
+            <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx">
+            <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem; cursor:pointer;"><i class="fas fa-paperclip"></i></button>
+            <input type="text" id="msgInput" placeholder="Type message..." autocomplete="off">
+            <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
 
-        <div id="replyPreview">
-            <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span id="replyName" style="color: var(--admin-gold); font-size: 0.75rem; font-weight: 700;"></span>
-                <span id="replyText" style="color: var(--text-dim); font-size: 0.8rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"></span>
-            </div>
-            <button onclick="window.cancelReply()" style="background:none; border:none; color:white; padding: 5px; cursor:pointer;"><i class="fas fa-times"></i></button>
-        </div>
+    </div>
 
-        <div class="input-area">
-            <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx">
-            <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem; cursor:pointer;"><i class="fas fa-paperclip"></i></button>
-            
-            <input type="text" id="msgInput" placeholder="Type message..." autocomplete="off">
-            
-            <button id="sendBtn" class="send-btn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
+    <script type="module" src="app.js"></script>
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        const side = document.getElementById('sidebar'), over = document.getElementById('overlay');
+        
+        // Sidebar Toggle
+        document.getElementById('openSidebar').onclick = () => { 
+            side.classList.add('active'); 
+            over.classList.add('active'); 
+        };
+        
+        over.onclick = () => { 
+            side.classList.remove('active'); 
+            over.classList.remove('active'); 
+        };
 
-    </div>
+        // Logout
+        document.getElementById('logoutBtn').onclick = () => {
+            if(confirm("Are you sure you want to logout?")) {
+                auth.signOut();
+            }
+        };
 
-    <script type="module" src="app.js"></script>
-
-    <script type="module">
-        import { auth } from './firebase-config.js';
-        
-        const side = document.getElementById('sidebar');
-        const over = document.getElementById('overlay');
-        
-        // Open Sidebar
-        document.getElementById('openSidebar').onclick = () => { 
-            side.classList.add('active'); 
-            over.classList.add('active'); 
-        };
-        
-        // Close Sidebar (Click outside)
-        over.onclick = () => { 
-            side.classList.remove('active'); 
-            over.classList.remove('active'); 
-        };
-
-        // Logout Process
-        document.getElementById('logoutBtn').onclick = () => {
-            if(confirm("Are you sure you want to logout?")) {
-                auth.signOut().then(() => {
-                    window.location.href = "index.html";
-                });
-            }
-        };
-
-        // Handle File Attachment Trigger
-        document.getElementById('fileInput').onchange = (e) => {
-            const file = e.target.files[0];
-            if (file && window.uploadFile) {
-                window.uploadFile(file);
-            }
-        };
-    </script>
+        // Handle File Selection
+        document.getElementById('fileInput').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file && window.uploadFile) {
+                window.uploadFile(file);
+            }
+        };
+    </script>
 </body>
 </html>

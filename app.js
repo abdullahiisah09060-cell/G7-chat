@@ -1,7 +1,7 @@
 import { auth, db, ADMIN_EMAILS } from './firebase-config.js';
 import { 
     collection, addDoc, query, orderBy, onSnapshot, 
-    serverTimestamp, doc, getDoc, limit, updateDoc, deleteDoc, setDoc 
+    serverTimestamp, doc, updateDoc, deleteDoc, limit 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const msgInput = document.getElementById('msgInput');
@@ -11,47 +11,58 @@ const userListDiv = document.getElementById('userList');
 
 let currentUserData = null;
 
-// 1. AUTH & SESSION LOGIC
+// --- 1. AUTH & PRESENCE ENGINE ---
 auth.onAuthStateChanged(async (user) => {
     if (!user) {
         window.location.href = "index.html";
         return;
     }
 
-    // --- FEATURE: ONLINE STATUS ---
-    // Sets user to online when they load the app
     const userRef = doc(db, "users", user.uid);
+
+    // Set Online Status
     updateDoc(userRef, { status: "online", lastSeen: serverTimestamp() });
 
-    // Handle offline status when they leave (simplified for Web)
+    // Handle Tab Close/Disconnect
     window.addEventListener('beforeunload', () => {
         updateDoc(userRef, { status: "offline" });
     });
 
+    // Real-time listener for current user profile
     onSnapshot(userRef, (snap) => {
         if (!snap.exists()) return;
         currentUserData = snap.data();
+        
         if (currentUserData.isBanned) {
-            alert("Account Suspended.");
+            alert("Your account has been suspended.");
             auth.signOut();
             return;
         }
+
+        // Update UI Header
         if(document.getElementById('userName')) {
             document.getElementById('userName').innerText = currentUserData.name;
             document.getElementById('userDept').innerText = `${currentUserData.dept} | ${currentUserData.level}`;
         }
+        
+        // Admin Button Visibility
         if (ADMIN_EMAILS.includes(user.email)) {
             const adminBtn = document.getElementById('adminBtn');
             if(adminBtn) adminBtn.style.display = 'block';
         }
     });
 
-    // 2. LOAD MESSAGES (WITH DELETE/EDIT POWER)
+    // --- 2. MESSAGE LISTENER (GLOBAL & PRIVATE) ---
     const urlParams = new URLSearchParams(window.location.search);
     const targetUid = urlParams.get('uid');
-    let q = targetUid ? 
-        query(collection(db, "private_messages", [user.uid, targetUid].sort().join('_'), "messages"), orderBy("createdAt"), limit(50)) :
-        query(collection(db, "messages"), orderBy("createdAt"), limit(100));
+
+    let q;
+    if (targetUid) {
+        const chatId = [user.uid, targetUid].sort().join('_');
+        q = query(collection(db, "private_messages", chatId, "messages"), orderBy("createdAt"), limit(100));
+    } else {
+        q = query(collection(db, "messages"), orderBy("createdAt"), limit(100));
+    }
 
     onSnapshot(q, (snapshot) => {
         if (!msgDiv) return;
@@ -61,26 +72,31 @@ auth.onAuthStateChanged(async (user) => {
             const data = docSnap.data();
             const msgId = docSnap.id;
             const isMe = data.uid === user.uid;
-            const isAdmin = ADMIN_EMAILS.includes(data.email);
-            const currentIsAdmin = ADMIN_EMAILS.includes(user.email);
+            const msgIsAdmin = ADMIN_EMAILS.includes(data.email);
+            const viewerIsAdmin = ADMIN_EMAILS.includes(user.email);
 
             const timestamp = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
             const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            // --- FEATURE: ADMIN DELETE & USER EDIT ---
-            let actionIcons = '';
-            if (currentIsAdmin) {
-                actionIcons += `<i class="fas fa-trash delete-icon" onclick="window.deleteMsg('${targetUid}', '${msgId}')"></i>`;
+            // Action Icons (Trash for Admins, Pen for Owners)
+            let actions = '';
+            if (viewerIsAdmin) {
+                actions += `<i class="fas fa-trash delete-icon" onclick="window.deleteMsg('${targetUid || ''}', '${msgId}')"></i>`;
             }
             if (isMe) {
-                actionIcons += `<i class="fas fa-pen edit-icon" onclick="window.editMsg('${targetUid}', '${msgId}', '${data.text}')"></i>`;
+                actions += `<i class="fas fa-pen edit-icon" onclick="window.editMsg('${targetUid || ''}', '${msgId}', \`${data.text}\`)"></i>`;
+            }
+
+            // Notification Trigger (if tab is hidden)
+            if (document.hidden && !isMe) {
+                window.showNotification(data.name, data.text);
             }
 
             msgDiv.innerHTML += `
-                <div class="msg ${isMe ? 'me' : ''}" id="msg-${msgId}">
+                <div class="msg ${isMe ? 'me' : ''}">
                     <span class="msg-info">
-                        ${isAdmin ? '<span class="admin-badge">Admin</span> ' : ''}
-                        ${data.name} ${actionIcons}
+                        ${msgIsAdmin ? '<span class="admin-badge">Admin</span> ' : ''}
+                        ${data.name} ${actions}
                     </span>
                     <div class="text-content">${data.text}</div>
                     ${data.fileUrl ? `<img src="${data.fileUrl}" class="chat-img" onclick="window.open('${data.fileUrl}')">` : ''}
@@ -90,20 +106,20 @@ auth.onAuthStateChanged(async (user) => {
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
 
-    // 3. LOAD SIDEBAR (ALPHABETICAL + ADMIN FIRST + ONLINE STATUS)
+    // --- 3. SIDEBAR (ALPHABETICAL & STATUS) ---
     if (userListDiv) {
         onSnapshot(collection(db, "users"), (snapshot) => {
-            userListDiv.innerHTML = '<p class="sidebar-label">FACULTY DIRECTORY</p>';
+            userListDiv.innerHTML = '<p style="font-size:0.6rem; color:var(--primary); font-weight:700; padding:10px;">G7 DIRECTORY</p>';
             let usersArray = [];
             snapshot.forEach(d => usersArray.push({id: d.id, ...d.data()}));
 
-            // --- FEATURE: ALPHABETICAL & ADMIN SORT ---
+            // Sort: Admins first, then Alphabetical A-Z
             usersArray.sort((a, b) => {
                 const aAdmin = ADMIN_EMAILS.includes(a.email);
                 const bAdmin = ADMIN_EMAILS.includes(b.email);
                 if (aAdmin && !bAdmin) return -1;
                 if (!aAdmin && bAdmin) return 1;
-                return a.name.localeCompare(b.name); // A-Z sorting
+                return a.name.localeCompare(b.name);
             });
 
             usersArray.forEach(u => {
@@ -112,13 +128,13 @@ auth.onAuthStateChanged(async (user) => {
                 const isUserAdmin = ADMIN_EMAILS.includes(u.email);
                 
                 userListDiv.innerHTML += `
-                    <div class="user-row" onclick="location.href='private.html?uid=${u.id}'">
-                        <div class="user-info">
-                            <div class="name-row">
-                                <span class="dot ${isOnline ? 'online' : 'offline'}"></span>
-                                <span class="${isUserAdmin ? 'gold-text' : ''}">${u.name}</span>
+                    <div class="user-row" onclick="location.href='private.html?uid=${u.id}'" style="display:flex; align-items:center; padding:12px; cursor:pointer; gap:10px;">
+                        <span class="dot ${isOnline ? 'online' : 'offline'}"></span>
+                        <div>
+                            <div style="font-size:0.85rem; font-weight:600; color:${isUserAdmin ? 'var(--admin-gold)' : 'white'}">
+                                ${u.name} ${isUserAdmin ? '⭐' : ''}
                             </div>
-                            <small>${u.dept}</small>
+                            <div style="font-size:0.65rem; color:var(--text-dim)">${u.dept}</div>
                         </div>
                     </div>`;
             });
@@ -126,9 +142,10 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-// --- FEATURE: GLOBAL ACTIONS (DELETE/EDIT) ---
+// --- 4. GLOBAL FUNCTIONS (DELETE / EDIT / SEND) ---
+
 window.deleteMsg = async (targetUid, msgId) => {
-    if(!confirm("Delete this message for everyone?")) return;
+    if(!confirm("Permanently delete this message?")) return;
     const path = targetUid ? `private_messages/${[auth.currentUser.uid, targetUid].sort().join('_')}/messages` : `messages`;
     await deleteDoc(doc(db, path, msgId));
 };
@@ -140,12 +157,13 @@ window.editMsg = async (targetUid, msgId, oldText) => {
     await updateDoc(doc(db, path, msgId), { text: newText, edited: true });
 };
 
-// 4. SEND MESSAGE (UNCHANGED BUT ADDED TO GLOBAL)
 window.sendMessage = async (text = "", fileData = null) => {
     if (!text && !fileData) return;
+    if (!currentUserData) return;
+
     const urlParams = new URLSearchParams(window.location.search);
     const targetUid = urlParams.get('uid');
-    
+
     const payload = {
         uid: auth.currentUser.uid,
         email: auth.currentUser.email,
@@ -156,11 +174,23 @@ window.sendMessage = async (text = "", fileData = null) => {
     };
     if (fileData) { payload.fileUrl = fileData.url; payload.fileType = fileData.type; }
 
-    const path = targetUid ? collection(db, "private_messages", [auth.currentUser.uid, targetUid].sort().join('_'), "messages") : collection(db, "messages");
-    await addDoc(path, payload);
+    const colRef = targetUid ? 
+        collection(db, "private_messages", [auth.currentUser.uid, targetUid].sort().join('_'), "messages") : 
+        collection(db, "messages");
+
+    await addDoc(colRef, payload);
     msgInput.value = "";
 };
 
-// Event Listeners
+// --- 5. NOTIFICATIONS ---
+if (Notification.permission !== "granted") Notification.requestPermission();
+
+window.showNotification = (sender, text) => {
+    if (Notification.permission === "granted") {
+        new Notification(`New Message from ${sender}`, { body: text });
+    }
+};
+
+// Listeners
 sendBtn.onclick = () => window.sendMessage(msgInput.value.trim());
 msgInput.onkeypress = (e) => { if(e.key === "Enter") window.sendMessage(msgInput.value.trim()); };

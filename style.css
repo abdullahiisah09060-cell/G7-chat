@@ -17,25 +17,25 @@
     font-family: 'Poppins', sans-serif; 
 }
 
-/* FIX: Changed from position:fixed to flex for better mobile scrolling */
+/* 1. Fix the core container */
 body, html {
     height: 100dvh; 
     width: 100vw;
     background-color: var(--bg-dark);
     color: var(--text-main);
-    overflow: hidden; 
-    display: flex;
-    flex-direction: column;
+    overflow: hidden; /* Prevents the whole page from bouncing on mobile */
 }
 
-/* FIX: Switched to flex to keep header/input visible on small screens */
+/* 2. Flexbox engine to keep items in place */
 .chat-wrapper {
     display: flex;
     flex-direction: column;
     height: 100dvh;
     width: 100%;
+    position: relative;
 }
 
+/* 3. Header stays at the top */
 .chat-header {
     background: #1a1d29;
     height: 65px;
@@ -47,7 +47,7 @@ body, html {
     z-index: 10;
 }
 
-/* FIX: flex: 1 makes this take up all middle space */
+/* 4. The Scrolling Zone - flex: 1 makes this fill all empty space */
 #messages {
     flex: 1;
     overflow-y: auto; 
@@ -56,10 +56,11 @@ body, html {
     flex-direction: column; 
     gap: 15px;
     background: var(--bg-dark);
-    /* Essential for smooth iPhone scrolling */
+    /* Crucial for mobile scroll to work */
     -webkit-overflow-scrolling: touch; 
 }
 
+/* 5. Message Bubbles */
 .msg {
     max-width: 85%; 
     padding: 10px 14px; 
@@ -106,7 +107,7 @@ body, html {
     font-weight: 400;
 }
 
-/* FIX: Forced visibility and safe area padding for modern phones */
+/* 6. Input Area - Stays at the bottom */
 .input-area {
     background: #1a1d29; 
     display: flex; 
@@ -114,6 +115,7 @@ body, html {
     gap: 10px; 
     padding: 10px 15px; 
     border-top: 1px solid var(--border-color);
+    /* Safe area for iPhones with no home button */
     padding-bottom: calc(15px + env(safe-area-inset-bottom));
     z-index: 20;
 }
@@ -126,7 +128,7 @@ body, html {
     padding: 12px 18px; 
     border-radius: 25px;
     outline: none; 
-    font-size: 16px; /* Prevents auto-zoom on iPhone */
+    font-size: 16px; /* Prevents auto-zoom on mobile */
 }
 
 .send-btn {
@@ -143,6 +145,7 @@ body, html {
     cursor: pointer;
 }
 
+/* Sidebar & Overlay */
 .sidebar {
     position: fixed; 
     left: -280px; 
@@ -153,9 +156,7 @@ body, html {
     z-index: 100;
     transition: 0.3s ease;
 }
-
 .sidebar.active { left: 0; }
-
 .sidebar-overlay {
     display: none; 
     position: fixed; 
@@ -166,12 +167,11 @@ body, html {
     background: rgba(0,0,0,0.6); 
     z-index: 90;
 }
-
 .sidebar-overlay.active { display: block; }
 
-/* Mobile Specific Adjustments */
+/* Mobile Tweaks */
 @media (max-width: 480px) {
     .msg { max-width: 90%; }
-    .chat-header h3 { font-size: 1rem; }
-    #msgInput { padding: 10px 15px; font-size: 14px; }
+    .chat-header { height: 60px; min-height: 60px; }
+    #msgInput { padding: 10px 15px; font-size: 16px; } /* Keep at 16px */
 }

@@ -9,7 +9,9 @@
 </head>
 <body>
     <div class="sidebar-overlay" id="overlay"></div>
+    
     <div class="chat-wrapper">
+        
         <div class="sidebar" id="sidebar">
             <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
                 <h3 style="color:var(--primary)">G7 Hitech Hub</h3>
@@ -18,37 +20,60 @@
             </div>
             <div id="userList" style="flex:1; overflow-y:auto; padding: 10px;"></div>
             <div style="padding: 15px;">
-                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none; width:100%; background: var(--admin-gold); padding:10px; border-radius:8px; font-weight:bold; margin-bottom:10px;">ADMIN PANEL</button>
-                <button id="logoutBtn" style="width:100%; background: #333; color:white; padding:10px; border-radius:8px;">Logout</button>
+                <button onclick="location.href='admin.html'" id="adminBtn" style="display:none; width:100%; background: var(--admin-gold); padding:10px; border-radius:8px; font-weight:bold; margin-bottom:10px; border:none;">ADMIN PANEL</button>
+                <button id="logoutBtn" style="width:100%; background: #333; color:white; padding:10px; border-radius:8px; border:none; cursor:pointer;">Logout</button>
             </div>
         </div>
 
-        <div class="main-chat">
-            <div class="chat-header">
-                <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px;"><i class="fas fa-bars"></i></button>
-                <div>
-                    <span style="font-weight:600; display:block;">G7 GLOBAL HUB</span>
-                    <span style="font-size:0.6rem; color:var(--whatsapp-green)">● SYSTEM ONLINE</span>
-                </div>
-            </div>
-
-            <div id="messages"></div>
-
-            <div class="input-area">
-                <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx">
-                <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem;"><i class="fas fa-paperclip"></i></button>
-                <input type="text" id="msgInput" placeholder="Type message..." autocomplete="off">
-                <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+        <div class="chat-header">
+            <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px; cursor:pointer;"><i class="fas fa-bars"></i></button>
+            <div>
+                <span style="font-weight:600; display:block;">G7 GLOBAL HUB</span>
+                <span style="font-size:0.6rem; color:var(--whatsapp-green)">● SYSTEM ONLINE</span>
             </div>
         </div>
+
+        <div id="messages"></div>
+
+        <div class="input-area">
+            <input type="file" id="fileInput" style="display:none" accept="image/*,.pdf,.doc,.docx">
+            <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:var(--text-dim); font-size:1.2rem; cursor:pointer;"><i class="fas fa-paperclip"></i></button>
+            <input type="text" id="msgInput" placeholder="Type message..." autocomplete="off">
+            <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+
     </div>
+
     <script type="module" src="app.js"></script>
     <script type="module">
         import { auth } from './firebase-config.js';
         const side = document.getElementById('sidebar'), over = document.getElementById('overlay');
-        document.getElementById('openSidebar').onclick = () => { side.classList.add('active'); over.classList.add('active'); };
-        over.onclick = () => { side.classList.remove('active'); over.classList.remove('active'); };
-        document.getElementById('logoutBtn').onclick = () => auth.signOut();
+        
+        // Sidebar Toggle
+        document.getElementById('openSidebar').onclick = () => { 
+            side.classList.add('active'); 
+            over.classList.add('active'); 
+        };
+        
+        over.onclick = () => { 
+            side.classList.remove('active'); 
+            over.classList.remove('active'); 
+        };
+
+        // Logout
+        document.getElementById('logoutBtn').onclick = () => {
+            if(confirm("Are you sure you want to logout?")) {
+                auth.signOut();
+            }
+        };
+
+        // Handle File Selection
+        document.getElementById('fileInput').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file && window.uploadFile) {
+                window.uploadFile(file);
+            }
+        };
     </script>
 </body>
 </html>

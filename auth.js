@@ -11,24 +11,28 @@ if(loginBtn) {
             loginBtn.innerHTML = "Authenticating...";
             
             const result = await signInWithPopup(auth, provider);
-            const userDoc = await getDoc(doc(db, "users", result.user.uid));
+            const user = result.user;
+            
+            // Check if user exists in our Firestore "users" collection
+            const userDoc = await getDoc(doc(db, "users", user.uid));
             
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 if (userData.isBanned) {
-                    alert("🚫 Access Denied: Your account has been suspended.");
+                    alert("🚨 ACCESS DENIED: Your account is suspended.");
                     await auth.signOut();
                     location.reload();
                 } else {
+                    // User exists and is not banned
                     window.location.href = "chat.html";
                 }
             } else {
-                // First time user
+                // New user - send to setup profile
                 window.location.href = "setup.html";
             }
         } catch (error) {
-            console.error("Login Failed", error);
-            alert("Login failed. Check your connection.");
+            console.error("Login Error:", error);
+            alert("Connection failed. Please try again.");
             loginBtn.disabled = false;
             loginBtn.innerHTML = "Sign in with Google";
         }

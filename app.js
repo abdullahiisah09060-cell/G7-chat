@@ -12,7 +12,7 @@ const replyPreview = document.getElementById('replyPreview');
 
 let currentUserData = null;
 let replyingTo = null;
-let pressTimer; // For Long Press
+let pressTimer; 
 
 // --- 1. AUTH & PRESENCE ---
 auth.onAuthStateChanged(async (user) => {
@@ -37,7 +37,7 @@ auth.onAuthStateChanged(async (user) => {
         }
     });
 
-    // --- 2. MESSAGE LISTENER (WITH REPLIES & REACTIONS) ---
+    // --- 2. MESSAGE LISTENER ---
     const urlParams = new URLSearchParams(window.location.search);
     const targetUid = urlParams.get('uid');
     const path = targetUid ? `private_messages/${[user.uid, targetUid].sort().join('_')}/messages` : `messages`;
@@ -51,10 +51,15 @@ auth.onAuthStateChanged(async (user) => {
         snapshot.forEach(docSnap => {
             const data = docSnap.data();
             const msgId = docSnap.id;
+            
+            // Feature 6: Local Deletion Check (Delete for Me)
+            const localDeleted = localStorage.getItem(`deleted_${msgId}`);
+            if (localDeleted) return;
+
             const isMe = data.uid === user.uid;
             const isAdmin = ADMIN_EMAILS.includes(user.email);
 
-            // Date Separator Logic
+            // Feature 8: Date Separator
             const timestamp = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
             const dateStr = timestamp.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
             if (dateStr !== lastDate) {
@@ -64,20 +69,20 @@ auth.onAuthStateChanged(async (user) => {
 
             const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            // Deletion & Content Logic
+            // Feature 1 & 5: Global Deletion Logic
             let contentHtml = "";
             if (data.isDeleted) {
                 const label = data.deletedByAdmin ? "Message deleted by Admin" : "This message was deleted";
                 contentHtml = `<div class="text-content" style="font-style:italic; opacity:0.6;">🚫 ${label}</div>`;
             } else {
                 contentHtml = `
-                    ${data.replyTo ? `<div class="reply-content"><b>${data.replyTo.name}:</b> ${data.replyTo.text}</div>` : ''}
+                    ${data.replyTo ? `<div class="reply-content" onclick="document.getElementById('cont-${data.replyTo.id}').scrollIntoView({behavior:'smooth'})"><b>${data.replyTo.name}:</b> ${data.replyTo.text}</div>` : ''}
                     <div class="text-content">${data.text}</div>
                     ${data.fileUrl ? `<img src="${data.fileUrl}" class="chat-img" onclick="window.open('${data.fileUrl}')">` : ''}
                 `;
             }
 
-            // Reactions UI
+            // Feature 2: Reactions
             let reactHtml = "";
             if (data.reactions) {
                 const emojis = Object.keys(data.reactions).join(' ');
@@ -87,16 +92,18 @@ auth.onAuthStateChanged(async (user) => {
             msgDiv.innerHTML += `
                 <div class="msg-container" id="cont-${msgId}" 
                      ontouchstart="window.handleTouchStart(event, '${msgId}', \`${data.text}\`, '${data.name}')" 
-                     ontouchend="window.handleTouchEnd()"
-                     onmousedown="window.handleLongPressStart('${path}', '${msgId}')" 
-                     onmouseup="window.handleLongPressEnd()">
+                     ontouchend="window.handleTouchEnd(event, '${msgId}', \`${data.text}\`, '${name}')">
                     <div class="msg ${isMe ? 'me' : ''} ${data.isDeleted ? 'deleted' : ''}">
                         <span class="msg-info">${data.name} ${isMe && !data.isDeleted ? `<i class="fas fa-pen edit-icon" onclick="window.editMsg('${path}','${msgId}', \`${data.text}\`)"></i>` : ''}</span>
                         ${contentHtml}
                         ${reactHtml}
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
                             <span class="msg-timestamp">${timeStr}</span>
-                            ${(isMe || isAdmin) && !data.isDeleted ? `<i class="fas fa-trash" style="font-size:0.7rem; opacity:0.5; cursor:pointer;" onclick="window.deleteMsg('${path}', '${msgId}', ${isAdmin && !isMe})"></i>` : ''}
+                            <div class="msg-actions">
+                                ${(isMe || isAdmin) && !data.isDeleted ? `<i class="fas fa-trash-alt" title="Delete for Everyone" onclick="window.deleteMsg('${path}', '${msgId}', ${isAdmin && !isMe})"></i>` : ''}
+                                <i class="fas fa-eye-slash" title="Delete for Me" onclick="window.deleteForMe('${msgId}')"></i>
+                                <i class="fas fa-share" title="Forward" onclick="window.forwardMsg(\`${data.text}\`)"></i>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -105,22 +112,15 @@ auth.onAuthStateChanged(async (user) => {
     });
 });
 
-// --- 3. WHATSAPP FEATURES LOGIC ---
+// --- 3. WHATSAPP FEATURES ---
 
-// Swipe to Reply
+// Feature 3: Swipe to Reply
 let startX = 0;
-window.handleTouchStart = (e, id, text, name) => {
-    startX = e.touches[0].clientX;
-    // Long press detection for mobile
-    pressTimer = setTimeout(() => window.reactMsg(id), 600);
-};
-
-window.handleTouchEnd = (e) => {
-    clearTimeout(pressTimer);
-    let endX = event.changedTouches[0].clientX;
-    if (startX - endX > 100) { // Swipe Left
-        // Trigger Reply
-        console.log("Swiped Left");
+window.handleTouchStart = (e) => { startX = e.touches[0].clientX; };
+window.handleTouchEnd = (e, id, text, name) => {
+    let endX = e.changedTouches[0].clientX;
+    if (startX - endX > 80) { // Swipe Left
+        window.setReply(id, text, name);
     }
 };
 
@@ -137,7 +137,7 @@ window.cancelReply = () => {
     replyPreview.style.display = 'none';
 };
 
-// Long Press for Emoji Reactions
+// Feature 2: Long Press Reactions
 window.handleLongPressStart = (path, msgId) => {
     pressTimer = setTimeout(() => {
         const emoji = prompt("React: 👍, ❤️, 😂, 🔥, 😮, 😢");
@@ -147,23 +147,29 @@ window.handleLongPressStart = (path, msgId) => {
         }
     }, 600);
 };
-window.handleLongPressEnd = () => clearTimeout(pressTimer);
 
-// Deletion Logic
+// Feature 4: Forwarding
+window.forwardMsg = (text) => {
+    const confirmFwd = confirm("Forward this message to Global Hub?");
+    if(confirmFwd) window.sendMessage(`[Forwarded]: ${text}`);
+};
+
+// Feature 6: Delete for Me (Local Only)
+window.deleteForMe = (msgId) => {
+    if(confirm("Remove this message from your view?")) {
+        localStorage.setItem(`deleted_${msgId}`, "true");
+        location.reload(); // Refresh to hide
+    }
+};
+
 window.deleteMsg = async (path, msgId, isAdmin) => {
-    if (!confirm("Delete this message?")) return;
+    if (!confirm("Delete for everyone?")) return;
     await updateDoc(doc(db, path, msgId), {
         isDeleted: true,
         deletedByAdmin: isAdmin,
         text: "deleted",
         fileUrl: null
     });
-};
-
-// Global Functions
-window.editMsg = async (path, msgId, oldText) => {
-    const newText = prompt("Edit message:", oldText);
-    if (newText && newText !== oldText) await updateDoc(doc(db, path, msgId), { text: newText, edited: true });
 };
 
 window.sendMessage = async (text = "") => {

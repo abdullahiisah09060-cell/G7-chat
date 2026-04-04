@@ -1,61 +1,50 @@
-:root {
-    --bg-dark: #0b141a;
-    --header-bg: #202c33;
-    --card-bg: #1e2a32;
-    --text-main: #e9edef;
-    --text-dim: #8696a0;
-    --border-color: #2a3942;
-    --my-bubble: #005c4b;
-    --their-bubble: #202c33;
-    --primary: #007bff;
-    --admin-gold: #ffcc00;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>G7 Hitech | Global</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar-overlay" id="overlay"></div>
+    <div class="sidebar" id="sidebar" style="position:fixed; left:-300px; width:300px; height:100%; background:var(--panel); z-index:1000; transition:0.3s; display:flex; flex-direction:column;">
+        <div class="story-container" id="stories">
+            </div>
+        <div style="padding:15px; border-bottom:1px solid var(--border)">
+            <button onclick="document.body.classList.toggle('light-mode')" class="icon-btn"><i class="fas fa-adjust"></i> Toggle Mode</button>
+        </div>
+        <div id="userList" style="flex:1; overflow-y:auto;"></div>
+        <div style="padding:15px;"><button id="logoutBtn" style="width:100%; padding:10px; background:#ff4d4d; color:white; border:none; border-radius:8px;">Logout Account</button></div>
+    </div>
 
-/* Light Mode Variables */
-.light-mode {
-    --bg-dark: #e5ddd5;
-    --header-bg: #ededed;
-    --card-bg: #ffffff;
-    --text-main: #111b21;
-    --text-dim: #667781;
-    --border-color: #d1d7db;
-    --my-bubble: #d9fdd3;
-    --their-bubble: #ffffff;
-}
+    <div class="chat-wrapper">
+        <div class="header">
+            <div style="display:flex; align-items:center;">
+                <button id="openMenu" class="icon-btn" style="margin-right:15px;"><i class="fas fa-bars"></i></button>
+                <div>
+                    <strong style="display:block;">G7 GLOBAL HUB</strong>
+                    <small id="activeStatus" style="color:var(--accent)">● 128 Online</small>
+                </div>
+            </div>
+            <button class="icon-btn"><i class="fas fa-search"></i></button>
+        </div>
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-body { background-color: var(--bg-dark); color: var(--text-main); height: 100dvh; overflow: hidden; transition: 0.3s; }
+        <div id="messages"></div>
 
-.chat-wrapper { display: flex; flex-direction: column; height: 100dvh; }
+        <div id="replyBox" style="display:none; background:var(--header); padding:10px; border-left:4px solid var(--accent); position:relative;">
+            <div id="replyUser" style="font-size:0.7rem; color:var(--accent); font-weight:bold;"></div>
+            <div id="replyMsg" style="font-size:0.8rem; color:var(--dim); overflow:hidden; white-space:nowrap;"></div>
+            <i class="fas fa-times" onclick="window.closeReply()" style="position:absolute; right:10px; top:10px; cursor:pointer;"></i>
+        </div>
 
-/* Message Styling */
-#messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-.msg { max-width: 85%; padding: 8px 12px; border-radius: 8px; font-size: 0.92rem; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-.msg.me { align-self: flex-end; background: var(--my-bubble); border-top-right-radius: 0; }
-.msg.them { align-self: flex-start; background: var(--their-bubble); border-top-left-radius: 0; }
-
-.msg.is-deleted { font-style: italic; color: var(--text-dim); background: transparent !important; border: 1px dashed var(--border-color); }
-
-/* Admin & Metadata */
-.admin-text { color: var(--admin-gold) !important; font-weight: bold; }
-.sender-meta { font-size: 0.65rem; color: var(--text-dim); display: block; margin-bottom: 2px; }
-
-/* Floating Reaction Bar */
-.reaction-bar {
-    position: absolute; top: -50px; left: 50%; transform: translateX(-50%) scale(0);
-    background: var(--header-bg); border-radius: 30px; padding: 5px 15px;
-    display: flex; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 1000;
-    transition: 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-}
-.reaction-bar.active { transform: translateX(-50%) scale(1); }
-.reaction-bar span { font-size: 1.3rem; cursor: pointer; }
-.plus-emoji { color: var(--primary); font-weight: bold; font-size: 1.5rem !important; }
-
-/* Sidebar */
-.sidebar { position: fixed; left: -300px; top: 0; width: 300px; height: 100%; background: var(--header-bg); z-index: 200; transition: 0.3s; border-right: 1px solid var(--border-color); }
-.sidebar.active { left: 0; }
-.unread-badge { background: #25d366; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.6rem; float: right; }
-
-/* Input Area */
-.input-area { background: var(--header-bg); padding: 10px; display: flex; align-items: center; gap: 8px; }
-#msgInput { flex: 1; background: var(--bg-dark); border: none; color: var(--text-main); padding: 10px 15px; border-radius: 20px; outline: none; }
+        <div class="input-area">
+            <button class="icon-btn"><i class="far fa-plus-square"></i></button>
+            <input type="text" id="msgInput" class="input-box" placeholder="Message..." autocomplete="off">
+            <button id="sendBtn" class="icon-btn" style="color:var(--accent)"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

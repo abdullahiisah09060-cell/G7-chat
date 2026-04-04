@@ -3,46 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G7 Hitech | Global</title>
+    <title>G7 HITECH | Premium Hub</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="overlay"></div>
-    <div class="sidebar" id="sidebar" style="position:fixed; left:-300px; width:300px; height:100%; background:var(--panel); z-index:1000; transition:0.3s; display:flex; flex-direction:column;">
-        <div class="story-container" id="stories">
-            </div>
-        <div style="padding:15px; border-bottom:1px solid var(--border)">
-            <button onclick="document.body.classList.toggle('light-mode')" class="icon-btn"><i class="fas fa-adjust"></i> Toggle Mode</button>
+    <div class="sidebar" id="sidebar">
+        <div class="story-tray" id="storyTray"></div>
+        <div style="padding: 20px; border-bottom: 1px solid var(--border);">
+            <h2 style="color:var(--admin-gold); margin-bottom:15px;">G7 HITECH</h2>
+            <button onclick="document.body.classList.toggle('light-mode')" class="btn-icon"><i class="fas fa-moon"></i> Change Theme</button>
         </div>
-        <div id="userList" style="flex:1; overflow-y:auto;"></div>
-        <div style="padding:15px;"><button id="logoutBtn" style="width:100%; padding:10px; background:#ff4d4d; color:white; border:none; border-radius:8px;">Logout Account</button></div>
+        <div id="userList" style="flex:1; overflow-y:auto; padding:10px;"></div>
+        <div style="padding: 20px;">
+            <button id="logoutBtn" style="width:100%; background:#ff4444; color:white; padding:12px; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Logout</button>
+        </div>
     </div>
 
     <div class="chat-wrapper">
         <div class="header">
-            <div style="display:flex; align-items:center;">
-                <button id="openMenu" class="icon-btn" style="margin-right:15px;"><i class="fas fa-bars"></i></button>
-                <div>
-                    <strong style="display:block;">G7 GLOBAL HUB</strong>
-                    <small id="activeStatus" style="color:var(--accent)">● 128 Online</small>
-                </div>
+            <button id="menuBtn" class="btn-icon"><i class="fas fa-bars"></i></button>
+            <div style="flex:1">
+                <strong id="chatName">GLOBAL HUB</strong>
+                <div style="font-size:0.65rem; color:var(--accent)">● <span id="userCount">...</span> Active Now</div>
             </div>
-            <button class="icon-btn"><i class="fas fa-search"></i></button>
+            <button class="btn-icon"><i class="fas fa-search"></i></button>
         </div>
 
         <div id="messages"></div>
 
-        <div id="replyBox" style="display:none; background:var(--header); padding:10px; border-left:4px solid var(--accent); position:relative;">
-            <div id="replyUser" style="font-size:0.7rem; color:var(--accent); font-weight:bold;"></div>
-            <div id="replyMsg" style="font-size:0.8rem; color:var(--dim); overflow:hidden; white-space:nowrap;"></div>
-            <i class="fas fa-times" onclick="window.closeReply()" style="position:absolute; right:10px; top:10px; cursor:pointer;"></i>
+        <div id="replyArea" style="display:none; background:var(--header); padding:10px; border-left:4px solid var(--accent);">
+            <div style="display:flex; justify-content:space-between">
+                <small id="replyUser" style="color:var(--accent); font-weight:bold;"></small>
+                <i class="fas fa-times" onclick="window.clearReply()" style="cursor:pointer; opacity:0.5;"></i>
+            </div>
+            <div id="replyText" style="font-size:0.8rem; opacity:0.7; overflow:hidden; white-space:nowrap;"></div>
         </div>
 
-        <div class="input-area">
-            <button class="icon-btn"><i class="far fa-plus-square"></i></button>
-            <input type="text" id="msgInput" class="input-box" placeholder="Message..." autocomplete="off">
-            <button id="sendBtn" class="icon-btn" style="color:var(--accent)"><i class="fas fa-paper-plane"></i></button>
+        <div class="input-strip">
+            <button class="btn-icon"><i class="far fa-plus-square"></i></button>
+            <input type="text" id="msgInput" class="msg-input" placeholder="Type a message..." autocomplete="off">
+            <button id="sendBtn" class="btn-icon" style="color:var(--accent)"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
     <script type="module" src="app.js"></script>

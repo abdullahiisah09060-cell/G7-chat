@@ -12,7 +12,6 @@
     <div class="sidebar" id="sidebar">
         <div style="padding:20px; border-bottom:1px solid var(--border); background:var(--header)">
             <h2 style="color:var(--admin-gold)">G7 HITECH</h2>
-            <small>Student Community</small>
         </div>
         <div id="userList" style="flex:1; overflow-y:auto;"></div>
         <div style="padding:15px;"><button id="logoutBtn" style="width:100%; padding:10px; background:#ff4444; color:white; border:none; border-radius:8px;">Logout</button></div>
@@ -21,7 +20,7 @@
     <div class="chat-wrapper">
         <div class="header">
             <i class="fas fa-bars action-btn" id="menuBtn"></i>
-            <div style="flex:1"><b>G7 GLOBAL HUB</b><br><small style="color:var(--accent)">● Online</small></div>
+            <div style="flex:1"><b>G7 GLOBAL HUB</b><br><small id="onlineCount" style="color:var(--accent)">● Loading...</small></div>
         </div>
         <div id="messages"></div>
         <div id="replyBar">
@@ -29,12 +28,12 @@
                 <small id="repUser" style="color:var(--accent); font-weight:bold;"></small>
                 <i class="fas fa-times" onclick="window.clearReply()"></i>
             </div>
-            <div id="repText" style="font-size:0.75rem; opacity:0.6; overflow:hidden; white-space:nowrap;"></div>
+            <div id="repText" style="font-size:0.75rem; opacity:0.6; overflow:hidden;"></div>
         </div>
         <div class="input-area">
             <label for="fileInput" class="action-btn"><i class="fas fa-image"></i></label>
             <input type="file" id="fileInput" style="display:none" accept="image/*">
-            <input type="text" id="msgInput" class="input-box" placeholder="Message...">
+            <input type="text" id="msgInput" class="input-box" placeholder="Type message...">
             <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>

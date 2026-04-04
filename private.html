@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G7 | Private Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>G7 | Private</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -11,15 +11,17 @@
     <div class="chat-wrapper">
         <div class="header">
             <i class="fas fa-arrow-left action-btn" onclick="location.href='chat.html'" style="color:var(--text)"></i>
-            <img id="targetImg" src="https://ui-avatars.com/api/?name=User">
+            <img id="targetImg" src="">
             <div style="flex:1">
-                <b id="targetName">Loading...</b>
-                <small id="targetStatus" style="display:block; font-size:0.6rem; color:var(--accent)">Online</small>
+                <b id="targetName">...</b>
+                <small id="targetStatus" style="display:block; color:var(--accent)">Online</small>
             </div>
         </div>
         <div id="messages"></div>
         <div class="input-area">
-            <input type="text" id="msgInput" class="input-box" placeholder="Message...">
+            <label for="fileInput" class="action-btn"><i class="fas fa-paperclip"></i></label>
+            <input type="file" id="fileInput" style="display:none">
+            <input type="text" id="msgInput" class="input-box" placeholder="Message privately...">
             <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>

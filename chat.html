@@ -1,22 +1,26 @@
-<div class="sidebar-overlay" id="overlay"></div>
-<div class="sidebar" id="sidebar">
-    <div style="padding:20px; border-bottom:1px solid var(--border);">
-        <h2 style="color:var(--admin-gold)">G7 HITECH</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>G7 PRIVATE</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="chat-wrapper">
+        <div class="header">
+            <i class="fas fa-arrow-left action-btn" onclick="location.href='chat.html'"></i>
+            <div style="flex:1"><b id="targetName">Loading...</b><br><small id="targetStatus">Private Message</small></div>
+        </div>
+        <div id="messages"></div>
+        <div class="input-area">
+            <label for="fileInput" class="action-btn"><i class="fas fa-image"></i></label>
+            <input type="file" id="fileInput" style="display:none" accept="image/*">
+            <input type="text" id="msgInput" class="input-box" placeholder="Message privately...">
+            <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
     </div>
-    <div id="userList" style="flex:1; overflow-y:auto;"></div>
-    <div style="padding:15px;"><button id="logoutBtn" style="width:100%; padding:10px; background:#ff4444; color:white; border:none; border-radius:5px;">Logout</button></div>
-</div>
-
-<div class="chat-wrapper">
-    <div class="header">
-        <i class="fas fa-bars action-btn" id="menuBtn"></i>
-        <b>G7 GLOBAL HUB</b>
-    </div>
-    <div id="messages"></div>
-    <div class="input-area">
-        <label for="fileInput" class="action-btn"><i class="fas fa-image"></i></label>
-        <input type="file" id="fileInput" style="display:none" accept="image/*">
-        <input type="text" id="msgInput" class="input-box" placeholder="Message...">
-        <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
-    </div>
-</div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

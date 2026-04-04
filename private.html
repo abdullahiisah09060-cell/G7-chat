@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Private Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>G7 | Private Chat</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="chat-wrapper">
-        <div class="chat-header">
-            <button onclick="location.href='chat.html'" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px; cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
-            <div>
-                <span id="targetUserName" style="font-weight:600; display:block;">...</span>
-                <span style="font-size:0.6rem; color:var(--whatsapp-green)">● Private Secure Chat</span>
+        <div class="header">
+            <i class="fas fa-arrow-left action-btn" onclick="location.href='chat.html'" style="color:var(--text)"></i>
+            <img id="targetImg" src="https://ui-avatars.com/api/?name=User">
+            <div style="flex:1">
+                <b id="targetName">Loading...</b>
+                <small id="targetStatus" style="display:block; font-size:0.6rem; color:var(--accent)">Online</small>
             </div>
         </div>
         <div id="messages"></div>
         <div class="input-area">
-            <input type="text" id="msgInput" placeholder="Type private message..." autocomplete="off">
-            <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+            <input type="text" id="msgInput" class="input-box" placeholder="Message...">
+            <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
     <script type="module" src="app.js"></script>

@@ -3,48 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G7 HITECH | Premium Hub</title>
+    <title>G7 HITECH | Global</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar-overlay" id="overlay"></div>
     <div class="sidebar" id="sidebar">
-        <div class="story-tray" id="storyTray"></div>
-        <div style="padding: 20px; border-bottom: 1px solid var(--border);">
-            <h2 style="color:var(--admin-gold); margin-bottom:15px;">G7 HITECH</h2>
-            <button onclick="document.body.classList.toggle('light-mode')" class="btn-icon"><i class="fas fa-moon"></i> Change Theme</button>
+        <div style="padding:20px; border-bottom:1px solid var(--border);">
+            <h2 style="color:var(--admin-gold)">G7 HITECH</h2>
+            <button onclick="document.body.classList.toggle('dark-theme-force')" style="margin-top:10px; border:none; background:none; color:var(--text); cursor:pointer;"><i class="fas fa-moon"></i> Toggle Dark</button>
         </div>
         <div id="userList" style="flex:1; overflow-y:auto; padding:10px;"></div>
-        <div style="padding: 20px;">
-            <button id="logoutBtn" style="width:100%; background:#ff4444; color:white; padding:12px; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Logout</button>
-        </div>
+        <div style="padding:20px;"><button id="logoutBtn" style="width:100%; background:#ff4444; color:white; border:none; padding:10px; border-radius:5px;">Logout</button></div>
     </div>
 
     <div class="chat-wrapper">
         <div class="header">
-            <button id="menuBtn" class="btn-icon"><i class="fas fa-bars"></i></button>
+            <i class="fas fa-bars action-btn" id="menuBtn" style="color:var(--text)"></i>
             <div style="flex:1">
-                <strong id="chatName">GLOBAL HUB</strong>
-                <div style="font-size:0.65rem; color:var(--accent)">● <span id="userCount">...</span> Active Now</div>
+                <b style="display:block">G7 GLOBAL HUB</b>
+                <small style="color:var(--accent)">● Students Online</small>
             </div>
-            <button class="btn-icon"><i class="fas fa-search"></i></button>
         </div>
-
         <div id="messages"></div>
-
-        <div id="replyArea" style="display:none; background:var(--header); padding:10px; border-left:4px solid var(--accent);">
-            <div style="display:flex; justify-content:space-between">
-                <small id="replyUser" style="color:var(--accent); font-weight:bold;"></small>
-                <i class="fas fa-times" onclick="window.clearReply()" style="cursor:pointer; opacity:0.5;"></i>
-            </div>
-            <div id="replyText" style="font-size:0.8rem; opacity:0.7; overflow:hidden; white-space:nowrap;"></div>
+        <div id="replyBar" style="display:none; background:var(--header); padding:8px; border-left:4px solid var(--accent);">
+            <small id="repUser" style="color:var(--accent); font-weight:bold;"></small>
+            <div id="repText" style="font-size:0.8rem; opacity:0.7; overflow:hidden; white-space:nowrap;"></div>
         </div>
-
-        <div class="input-strip">
-            <button class="btn-icon"><i class="far fa-plus-square"></i></button>
-            <input type="text" id="msgInput" class="msg-input" placeholder="Type a message..." autocomplete="off">
-            <button id="sendBtn" class="btn-icon" style="color:var(--accent)"><i class="fas fa-paper-plane"></i></button>
+        <div class="input-area">
+            <input type="text" id="msgInput" class="input-box" placeholder="Message...">
+            <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
     <script type="module" src="app.js"></script>

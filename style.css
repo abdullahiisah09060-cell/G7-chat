@@ -1,50 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>G7 Hitech | Global</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <div class="sidebar-overlay" id="overlay"></div>
-    <div class="sidebar" id="sidebar" style="position:fixed; left:-300px; width:300px; height:100%; background:var(--panel); z-index:1000; transition:0.3s; display:flex; flex-direction:column;">
-        <div class="story-container" id="stories">
-            </div>
-        <div style="padding:15px; border-bottom:1px solid var(--border)">
-            <button onclick="document.body.classList.toggle('light-mode')" class="icon-btn"><i class="fas fa-adjust"></i> Toggle Mode</button>
-        </div>
-        <div id="userList" style="flex:1; overflow-y:auto;"></div>
-        <div style="padding:15px;"><button id="logoutBtn" style="width:100%; padding:10px; background:#ff4d4d; color:white; border:none; border-radius:8px;">Logout Account</button></div>
-    </div>
+import { auth, db, ADMIN_EMAILS } from './firebase-config.js';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, getDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    <div class="chat-wrapper">
-        <div class="header">
-            <div style="display:flex; align-items:center;">
-                <button id="openMenu" class="icon-btn" style="margin-right:15px;"><i class="fas fa-bars"></i></button>
-                <div>
-                    <strong style="display:block;">G7 GLOBAL HUB</strong>
-                    <small id="activeStatus" style="color:var(--accent)">● 128 Online</small>
-                </div>
-            </div>
-            <button class="icon-btn"><i class="fas fa-search"></i></button>
+// ... existing selectors ...
+let pressTimer;
+
+// LONG PRESS LOGIC
+window.startPress = (e, id) => {
+    pressTimer = window.setTimeout(() => {
+        window.openReact(id);
+    }, 600); // 0.6 seconds - feels just like WhatsApp
+};
+
+window.stopPress = () => {
+    clearTimeout(pressTimer);
+};
+
+window.openReact = (id) => {
+    document.querySelectorAll('.react-bar').forEach(b => b.classList.remove('active'));
+    const bar = document.getElementById(`re-${id}`);
+    if(bar) bar.classList.add('active');
+};
+
+// ... Message Rendering ...
+// Inside your onSnapshot loop, update the HTML to this:
+msgDiv.innerHTML += `
+    <div class="msg-container" 
+        onmousedown="window.startPress(event, '${m.id}')" 
+        onmouseup="window.stopPress()" 
+        ontouchstart="window.startPress(event, '${m.id}')" 
+        ontouchend="window.stopPress()">
+        
+        <div class="react-bar" id="re-${m.id}">
+            <span onclick="window.react('${m.id}', '👍')">👍</span>
+            <span onclick="window.react('${m.id}', '❤️')">❤️</span>
+            <span onclick="window.react('${m.id}', '😂')">😂</span>
+            <span onclick="window.react('${m.id}', '😮')">😮</span>
+            <span onclick="window.react('${m.id}', '🙏')">🙏</span>
+            <span onclick="document.getElementById('msgInput').focus()">➕</span>
         </div>
 
-        <div id="messages"></div>
-
-        <div id="replyBox" style="display:none; background:var(--header); padding:10px; border-left:4px solid var(--accent); position:relative;">
-            <div id="replyUser" style="font-size:0.7rem; color:var(--accent); font-weight:bold;"></div>
-            <div id="replyMsg" style="font-size:0.8rem; color:var(--dim); overflow:hidden; white-space:nowrap;"></div>
-            <i class="fas fa-times" onclick="window.closeReply()" style="position:absolute; right:10px; top:10px; cursor:pointer;"></i>
+        <div class="msg ${isMe ? 'me' : 'them'} ${m.isDeleted ? 'deleted-text' : ''}">
+            <span class="sender-name ${isAdmin ? 'admin-name' : ''}">${isAdmin ? '👑 ' : ''}${m.name}</span>
+            <div>${m.isDeleted ? (m.byAdmin ? '🚫 Deleted by Admin' : '🗑️ Message deleted') : m.text}</div>
+            ${m.reaction ? `<div class="reaction-tag" style="position:absolute; bottom:-12px; right:8px; background:var(--header); padding:2px 6px; border-radius:10px; font-size:0.75rem;">${m.reaction}</div>` : ''}
         </div>
-
-        <div class="input-area">
-            <button class="icon-btn"><i class="far fa-plus-square"></i></button>
-            <input type="text" id="msgInput" class="input-box" placeholder="Message..." autocomplete="off">
-            <button id="sendBtn" class="icon-btn" style="color:var(--accent)"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-    <script type="module" src="app.js"></script>
-</body>
-</html>
+    </div>`;

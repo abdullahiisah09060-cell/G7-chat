@@ -11,13 +11,14 @@
     <div class="chat-wrapper">
         <div class="header">
             <i class="fas fa-arrow-left action-btn" onclick="location.href='chat.html'"></i>
-            <div style="flex:1"><b id="targetName">Loading...</b><br><small id="targetStatus">Private Message</small></div>
+            <div style="flex:1"><b id="targetName">Loading...</b><br><small id="targetStatus">Private Chat</small></div>
         </div>
         <div id="messages"></div>
+        <div id="replyBar" style="display:none;"> </div>
         <div class="input-area">
             <label for="fileInput" class="action-btn"><i class="fas fa-image"></i></label>
             <input type="file" id="fileInput" style="display:none" accept="image/*">
-            <input type="text" id="msgInput" class="input-box" placeholder="Message privately...">
+            <input type="text" id="msgInput" class="input-box" placeholder="Private message...">
             <button id="sendBtn" class="action-btn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>

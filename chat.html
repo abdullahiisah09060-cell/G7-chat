@@ -9,36 +9,40 @@
 </head>
 <body>
     <div class="sidebar-overlay" id="overlay"></div>
-    <div class="sidebar" id="sidebar">
-        <div style="padding:20px; background:#202c33; border-bottom: 1px solid var(--border-color);">
-            <h3 style="color:var(--whatsapp-green)">G7 Hitech</h3>
-            <p id="userName" style="font-size:0.8rem; color:var(--text-dim)"></p>
+    <div class="sidebar" id="sidebar" style="position:fixed; left:-300px; width:300px; height:100%; background:var(--panel); z-index:1000; transition:0.3s; display:flex; flex-direction:column;">
+        <div class="story-container" id="stories">
+            </div>
+        <div style="padding:15px; border-bottom:1px solid var(--border)">
+            <button onclick="document.body.classList.toggle('light-mode')" class="icon-btn"><i class="fas fa-adjust"></i> Toggle Mode</button>
         </div>
-        <div id="userList" style="flex:1; overflow-y:auto; padding:10px;"></div>
-        <div style="padding:15px; border-top:1px solid var(--border-color);">
-            <button id="logoutBtn" class="btn-logout">Logout Account</button>
-        </div>
+        <div id="userList" style="flex:1; overflow-y:auto;"></div>
+        <div style="padding:15px;"><button id="logoutBtn" style="width:100%; padding:10px; background:#ff4d4d; color:white; border:none; border-radius:8px;">Logout Account</button></div>
     </div>
 
     <div class="chat-wrapper">
-        <div class="chat-header">
-            <button id="openSidebar" style="background:none; border:none; color:white; font-size:1.2rem; margin-right:15px;"><i class="fas fa-bars"></i></button>
-            <div>
-                <span style="font-weight:600; display:block;">G7 GLOBAL HUB</span>
-                <span id="onlineCount" style="font-size:0.6rem; color:var(--whatsapp-green)">Connecting...</span>
+        <div class="header">
+            <div style="display:flex; align-items:center;">
+                <button id="openMenu" class="icon-btn" style="margin-right:15px;"><i class="fas fa-bars"></i></button>
+                <div>
+                    <strong style="display:block;">G7 GLOBAL HUB</strong>
+                    <small id="activeStatus" style="color:var(--accent)">● 128 Online</small>
+                </div>
             </div>
+            <button class="icon-btn"><i class="fas fa-search"></i></button>
         </div>
 
         <div id="messages"></div>
 
-        <div id="replyPreview" style="display:none; background:#1e2a32; padding:10px; border-left:4px solid var(--primary);">
-            <div id="replyName" style="font-size:0.7rem; color:var(--primary); font-weight:bold;"></div>
-            <div id="replyText" style="font-size:0.8rem; color:var(--text-dim);"></div>
+        <div id="replyBox" style="display:none; background:var(--header); padding:10px; border-left:4px solid var(--accent); position:relative;">
+            <div id="replyUser" style="font-size:0.7rem; color:var(--accent); font-weight:bold;"></div>
+            <div id="replyMsg" style="font-size:0.8rem; color:var(--dim); overflow:hidden; white-space:nowrap;"></div>
+            <i class="fas fa-times" onclick="window.closeReply()" style="position:absolute; right:10px; top:10px; cursor:pointer;"></i>
         </div>
 
         <div class="input-area">
-            <input type="text" id="msgInput" placeholder="Type message..." autocomplete="off">
-            <button id="sendBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+            <button class="icon-btn"><i class="far fa-plus-square"></i></button>
+            <input type="text" id="msgInput" class="input-box" placeholder="Message..." autocomplete="off">
+            <button id="sendBtn" class="icon-btn" style="color:var(--accent)"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
     <script type="module" src="app.js"></script>
